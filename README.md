@@ -127,7 +127,7 @@ with httpz.Session() as session:
 If you want to build the library from source:
 
 ```bash
-git clone https://github.com/username/httpz
+git clone https://github.com/shahzain345/httpz
 cd httpz
 make
 python -m pip install -e .
