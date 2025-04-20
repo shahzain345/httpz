@@ -13,7 +13,7 @@ A Python HTTP client that wraps around the [azuretls-client](https://github.com/
 ## Installation
 
 ```bash
-pip install httpz
+pip install httpz-ja3
 ```
 
 ## Quick Start
