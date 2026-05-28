@@ -1,5 +1,0 @@
-include libazuretls.so
-include libazuretls.h
-include Makefile
-include README.md
-include LICENSE 
