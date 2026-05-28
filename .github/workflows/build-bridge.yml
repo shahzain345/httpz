@@ -1,0 +1,124 @@
+name: build-bridge
+
+# Builds the httpz_bridge shared library on real Windows, Linux, and macOS
+# runners and uploads each one as a downloadable artifact.
+#
+# Triggers:
+#   - push to main (only when files under go/ or this workflow change)
+#   - manual run from the Actions tab ("Run workflow" button)
+#   - on any version tag (vX.Y.Z) so cutting a release produces fresh binaries
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'go/**'
+      - '.github/workflows/build-bridge.yml'
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  # ──────────────────────────────────────────────────────────────
+  # Windows AMD64 -> httpz_bridge.dll
+  # ──────────────────────────────────────────────────────────────
+  windows:
+    name: Windows AMD64
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.22'
+          cache-dependency-path: go/go.sum
+
+      - name: Build httpz_bridge.dll
+        shell: cmd
+        env:
+          CGO_ENABLED: '1'
+        run: |
+          cd go
+          go build -buildmode=c-shared -o ..\httpz\_libs\httpz_bridge.dll .
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: bridge-windows-amd64
+          path: httpz/_libs/httpz_bridge.dll
+          if-no-files-found: error
+
+  # ──────────────────────────────────────────────────────────────
+  # Linux AMD64 -> httpz_bridge.so
+  # ──────────────────────────────────────────────────────────────
+  linux:
+    name: Linux AMD64
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.22'
+          cache-dependency-path: go/go.sum
+
+      - name: Build httpz_bridge.so
+        env:
+          CGO_ENABLED: '1'
+        working-directory: go
+        run: go build -buildmode=c-shared -o ../httpz/_libs/httpz_bridge.so .
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: bridge-linux-amd64
+          path: httpz/_libs/httpz_bridge.so
+          if-no-files-found: error
+
+  # ──────────────────────────────────────────────────────────────
+  # macOS Intel + Apple Silicon -> httpz_bridge.dylib + _arm64.dylib
+  # Single job, single runner — clang's `-arch` handles both slices.
+  # ──────────────────────────────────────────────────────────────
+  macos:
+    name: macOS (Intel + ARM64)
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.22'
+          cache-dependency-path: go/go.sum
+
+      - name: Build both .dylib slices
+        run: |
+          chmod +x go/build.sh
+          ./go/build.sh
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: bridge-macos
+          path: |
+            httpz/_libs/httpz_bridge.dylib
+            httpz/_libs/httpz_bridge_arm64.dylib
+          if-no-files-found: error
+
+  # ──────────────────────────────────────────────────────────────
+  # Bundle every per-OS artifact into one combined download.
+  # Convenient if you just want to grab "all the binaries" in one click.
+  # ──────────────────────────────────────────────────────────────
+  bundle:
+    name: Bundle all artifacts
+    needs: [windows, linux, macos]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: List collected files
+        run: find artifacts -type f -print
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: bridge-all-platforms
+          path: artifacts/**
+          if-no-files-found: error

@@ -1,0 +1,514 @@
+# httpz
+
+**An HTTP client for Python with first-class TLS fingerprint control.**
+
+httpz is the first Python HTTP library that makes setting a custom **JA3** fingerprint as effortless as setting a header — pass a string, and the underlying TLS handshake is rewritten to match. The same goes for **HTTP/2 (Akamai)** fingerprints. The API mirrors `httpx` so existing code ports over with almost no changes.
+
+Under the hood, httpz wraps [azuretls-client](https://github.com/Noooste/azuretls-client) (Go) as a shared library and bridges it into Python.
+
+```python
+import httpz
+
+with httpz.Client(
+    ja3="771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,0-23-65281-10-11-35-16-5-13-18-51-45-43-27-17513,29-23-24,0",
+    browser="chrome",
+) as client:
+    r = client.get("https://tls.peet.ws/api/all")
+    print(r.json())   # the JA3 you set is the JA3 the server sees
+```
+
+---
+
+## Why httpz
+
+Existing TLS-fingerprinting options in Python — `curl_cffi`, `tls_client`, raw `pycurl` patches — generally require you to pick a pre-canned browser preset, or to wrangle low-level config that doesn't survive a library upgrade. **httpz is the first Python library where you can hand it any JA3 string and it Just Works.** No preset enum, no rebuild step, no fork of urllib3 — just `ja3="..."` on the constructor.
+
+You also get the regular HTTP-client conveniences in one library: sync + async, sessions with cookie jars, proxy support (http / https / socks5), HTTP/2, and an `httpx`-style request/response surface.
+
+---
+
+## Features
+
+### TLS fingerprint control
+
+- **Custom JA3** — supply any JA3 fingerprint string and httpz reproduces the exact ClientHello (cipher suites, extensions, elliptic curves, point formats) at the TLS layer.
+- **Custom HTTP/2 (Akamai) fingerprint** — set SETTINGS, WINDOW_UPDATE, header pseudo-header ordering, and priority frames via a single Akamai-format string.
+- **Browser presets** — `chrome`, `firefox`, `safari`, `edge`, `opera`, `ios` for one-line spoofing without writing a JA3 by hand.
+- **`impersonate="..."` — 82 pre-canned browser presets** scraped from `curl_cffi` and `primp`, plus user-added profiles (see [Impersonate presets](#impersonate-presets) below).
+- **Apply at runtime** — `client.apply_ja3(...)` and `client.apply_h2_fingerprint(...)` reconfigure a live session without rebuilding it.
+
+```python
+client = httpz.Client(browser=httpz.CHROME)
+client.apply_ja3("771,4865-...", browser="chrome")
+client.apply_h2_fingerprint("1:65536;2:0;4:6291456;6:262144|15663105|0|m,s,a,p")
+```
+
+### Impersonate presets
+
+`impersonate="chrome131"` is a one-shot shorthand that sets JA3 + Akamai (H2) fingerprint + User-Agent + browser navigator all at once, using fingerprints scraped from `curl_cffi` and `primp`:
+
+```python
+# Use a curl_cffi-shaped Chrome 131 handshake
+with httpz.Client(impersonate="chrome131") as c:
+    r = c.get("https://tls.peet.ws/api/all")
+    print(r.json()["tls"]["ja3_hash"])  # matches curl_cffi's chrome131 exactly
+
+# Use a primp-shaped Chrome 131 handshake (different extension order)
+with httpz.Client(impersonate="chrome_131") as c:
+    ...
+
+# Any explicit kwarg overrides the preset
+with httpz.Client(impersonate="chrome131", user_agent="MyBot/1.0") as c:
+    ...
+```
+
+**82 unique browser profiles** (and ~131 names total once aliases are counted — names like `safari17_0` and `safari_17.0` resolve to the same canonical profile because the bytes-on-the-wire are identical).
+
+#### Every profile you can impersonate
+
+##### Chrome (43)
+
+**curl_cffi-sourced (19)** — desktop unless noted:
+`chrome99`, `chrome100`, `chrome101`, `chrome104`, `chrome107`, `chrome110`, `chrome116`, `chrome119`, `chrome120`, `chrome123`, `chrome124`, `chrome131`, `chrome133a`, `chrome136`, `chrome142`, `chrome145`, `chrome146`, `chrome99_android`, `chrome131_android`
+
+**primp-sourced (23)** — desktop:
+`chrome_100`, `chrome_101`, `chrome_104`, `chrome_105`, `chrome_106`, `chrome_107`, `chrome_108`, `chrome_109`, `chrome_114`, `chrome_116`, `chrome_117`, `chrome_118`, `chrome_119`, `chrome_120`, `chrome_123`, `chrome_124`, `chrome_126`, `chrome_127`, `chrome_128`, `chrome_129`, `chrome_130`, `chrome_131`, `chrome_133`
+
+**Manual / user-added (1)**:
+`chrome148`
+
+##### Firefox (9)
+
+**curl_cffi-sourced (5)** — desktop (incl. Tor):
+`firefox133`, `firefox135`, `firefox144`, `firefox147`, `tor145`
+
+**primp-sourced (3)** — desktop:
+`firefox_109`, `firefox_117`, `firefox_128`
+
+**Manual / user-added (1)**:
+`firefox151`
+
+##### Safari (11 unique, ~24 with aliases)
+
+**curl_cffi-sourced (11)** — desktop + iOS:
+`safari153`, `safari155`, `safari170`, `safari172_ios`, `safari180`, `safari180_ios`, `safari184`, `safari184_ios`, `safari260`, `safari2601`, `safari260_ios`
+
+Aliases (resolve to a curl_cffi profile above): `safari15_3` → `safari153`, `safari15_5` → `safari155`, `safari17_0` → `safari170`, `safari17_2_ios` → `safari172_ios`, `safari18_0` → `safari180`, `safari18_0_ios` → `safari180_ios`.
+
+**primp-sourced** — desktop + iOS + iPad (note: many `safari_*` entries from primp turn out to be identical to curl_cffi safari profiles on the wire, so they resolve to the curl_cffi canonical via alias):
+`safari_15.3`, `safari_15.5`, `safari_15.6.1`, `safari_16`, `safari_16.5`, `safari_17.2.1`, `safari_17.4.1`, `safari_17.5`, `safari_18.2`, `safari_ios_16.5`, `safari_ios_17.4.1`, `safari_ios_18.1.1`, `safari_ipad_18`
+
+##### Edge (6)
+
+**curl_cffi-sourced (2)** — desktop:
+`edge99`, `edge101`
+
+**primp-sourced (4)** — desktop:
+`edge_101`, `edge_122`, `edge_127`, `edge_131`
+
+#### How name lookup works
+
+Names are normalized before lookup, so all of these resolve to the same profile: `chrome131`, `chrome_131`, `Chrome131`, `CHROME131` (after normalization that strips underscores/dots and lowercases). When the same family/version exists in both libraries the curl_cffi version is preferred as the canonical, and the primp version remains available under its underscored name (different ja3 extension order — still a distinct profile on the wire).
+
+List everything at runtime:
+
+```python
+import httpz
+print(httpz.list_impersonate_targets())          # every resolvable name
+print(httpz.resolve_impersonate("chrome131"))    # full preset dict
+```
+
+#### Refreshing the presets
+
+The presets live in `httpz/_presets.json` and are generated by `scripts/scrape_fingerprints.py`. To rescrape (e.g. after upgrading curl_cffi or primp):
+
+```bash
+pip install -U curl_cffi primp
+python scripts/scrape_fingerprints.py
+```
+
+The scraper enumerates every impersonate target each library exposes, makes a real request through that library to `https://tls.peet.ws/api/all`, captures the JA3 + Akamai fingerprint + User-Agent the server saw, dedupes any names that produce byte-identical handshakes, and writes the result to `httpz/_presets.json`. Manually-added profiles (the `source: "manual"` entries) are preserved across rescrapes only if you re-add them — keep a backup if you've curated any.
+
+#### A note on TLS extension 41 (pre_shared_key)
+
+If you paste in a JA3 captured from a live browser session that includes extension `41` at the end of the extension list, strip it before saving the preset. TLS 1.3 `pre_shared_key` is only valid in a ClientHello when accompanied by real session-resumption material — without it the server rejects the handshake. `curl_cffi`/`utls`/`azuretls` all drop it on the way out, so the resulting JA3 on the wire never contains 41. The dedupe step in `scripts/scrape_fingerprints.py` doesn't strip extensions — you'd do that by hand when adding a manual preset.
+
+### Sync and async clients
+
+- `httpz.Client` — blocking, `with`-context safe, modeled after `httpx.Client`.
+- `httpz.AsyncClient` — `async with`-context safe, mirrors `httpx.AsyncClient`. Runs the FFI bridge calls in a thread pool so it never blocks the event loop.
+
+```python
+# Sync
+with httpz.Client() as c:
+    r = c.get("https://example.com")
+
+# Async
+async with httpz.AsyncClient() as c:
+    r = await c.get("https://example.com")
+```
+
+### Module-level shortcuts
+
+`httpz.get`, `httpz.post`, `httpz.put`, `httpz.patch`, `httpz.delete`, `httpz.head`, `httpz.options` — for one-off calls that build, use, and dispose of a client in one line.
+
+### Request features
+
+- **HTTP methods**: GET, POST, PUT, PATCH, DELETE, HEAD, OPTIONS.
+- **JSON bodies**: `client.post(url, json={...})` — automatic serialization and `Content-Type`.
+- **Form bodies**: `client.post(url, data={...})` — URL-encoded with the right `Content-Type`.
+- **Raw bytes**: `client.post(url, content=b"...")` for arbitrary payloads.
+- **Query params**: `client.get(url, params={"q": "x"})` — merged with any existing query string.
+- **Headers**: defaults set on the client, plus per-request overrides; case-insensitive multi-dict.
+- **Cookies**: a `Cookies` jar that auto-syncs with `Set-Cookie` responses and re-sends on subsequent requests.
+- **Redirects**: `follow_redirects` and `max_redirects` per request.
+- **Timeouts**: client-default or per-request (`timeout=...` in seconds).
+- **TLS verify** toggle: `verify=False` for self-signed certs in dev.
+
+### Sessions, proxies, and networking
+
+- **Proxy support**: `proxy="http://..."`, `"https://..."`, or `"socks5://..."`. Settable at construction or via `set_proxy(...)` / `clear_proxy()`.
+- **Cookie persistence** within the session (managed by the Go-side jar).
+- **HTTP/2** by default when the server negotiates it.
+- **User-Agent** override at the client level.
+
+### Response API
+
+A response object modeled after `httpx.Response`:
+
+- `r.status_code`, `r.ok`, `r.is_success`
+- `r.text`, `r.content` (bytes), `r.json()`
+- `r.headers` (Headers multi-dict), `r.cookies` (Cookies)
+- `r.url`, `r.http_version`
+- `r.raise_for_status()`
+
+### Exceptions
+
+A small, structured exception tree rooted at `HTTPZError`:
+
+`TransportError`, `BridgeError`, `TimeoutError`, `ProxyError`, `TooManyRedirects`, `ConnectionError`, `HTTPStatusError`.
+
+---
+
+## Quick examples
+
+```python
+# 1. Browser-emulated GET (using a pre-canned impersonate preset)
+with httpz.Client(impersonate="chrome131") as c:
+    r = c.get("https://tls.peet.ws/api/all")
+    print(r.json()["tls"]["ja3_hash"])
+
+# 2. POST JSON through a SOCKS5 proxy
+with httpz.Client(proxy="socks5://user:pass@127.0.0.1:1080") as c:
+    r = c.post("https://api.example.com/v1/items", json={"name": "x"})
+    r.raise_for_status()
+
+# 3. Custom JA3 + custom H2 fingerprint
+with httpz.Client(
+    ja3="771,4865-4867-...",
+    h2_fingerprint="1:65536;...|15663105|0|m,s,a,p",
+    browser="chrome",
+) as c:
+    print(c.get("https://example.com").status_code)
+
+# 4. Async, with cookie persistence
+async with httpz.AsyncClient() as c:
+    await c.get("https://httpbin.org/cookies/set?session=abc")
+    r = await c.get("https://httpbin.org/cookies")
+    assert r.json()["cookies"]["session"] == "abc"
+```
+
+---
+
+## Benchmarks
+
+The `benchmarks/` directory compares httpz against `httpx`, `requests`, `curl_cffi`, `primp`, and `aiohttp` across four scenarios. Run it yourself with `python benchmarks/run_all.py`. The numbers below were measured against `httpbin.org` (which rate-limits aggressively — expect noise, especially in the long tails).
+
+### Sequential GETs — 50 requests, one client
+
+| Library            | Total (s) | req/s | mean (ms) | p95 (ms) | errors |
+|--------------------|-----------|-------|-----------|----------|--------|
+| requests           |     11.64 |   4.3 |     232.8 |    236.6 |      0 |
+| curl_cffi          |     11.82 |   4.2 |     236.5 |    238.8 |      0 |
+| httpx              |     11.86 |   4.2 |     237.2 |    241.6 |      0 |
+| httpz_async        |     12.27 |   4.1 |     245.5 |    256.6 |      0 |
+| aiohttp            |     12.31 |   4.1 |     246.2 |    248.8 |      0 |
+| httpx_async        |     12.31 |   4.1 |     246.2 |    249.3 |      0 |
+| **httpz**          | **12.37** | **4.0** | **247.3** | **259.3** | **0** |
+| curl_cffi_async    |     12.56 |   4.0 |     251.1 |    256.2 |      0 |
+| primp              |    182.16 |   0.2 |    3643.3 |  15008.8 |      7 |
+
+Steady-state, everything is network-bound and clusters within ~10ms of each other. httpz adds ~15ms over the fastest sync client per request — a tiny price for the FFI hop into Go.
+
+### Concurrent GETs — 50 requests, concurrency 10
+
+| Library            | Total (s) | req/s | mean (ms) | p95 (ms) | errors |
+|--------------------|-----------|-------|-----------|----------|--------|
+| curl_cffi_async    |      1.50 |  33.4 |     273.7 |    476.5 |      0 |
+| httpx_async        |      2.01 |  24.8 |     379.7 |   1001.9 |      0 |
+| aiohttp            |      2.02 |  24.8 |     376.3 |   1018.4 |      0 |
+| **httpz** (sync)   | **10.06** | **5.0** | **1952.3** | **3664.3** | **0** |
+| httpx (sync)       |     10.74 |   4.7 |    1867.4 |   3382.3 |      0 |
+| requests           |     22.77 |   2.2 |    3901.8 |   9821.8 |      0 |
+| httpz_async        |     31.97 |   1.3 |    4960.7 |  15007.1 |     10 |
+| primp              |     34.69 |   1.0 |    5756.2 |  15013.9 |     15 |
+| curl_cffi          |     35.26 |   1.4 |    5363.4 |  13200.7 |      1 |
+
+Sync httpz beats sync httpx and is **~2.3× faster than `requests`** under load. The native async clients (`aiohttp`, `httpx_async`, `curl_cffi_async`) win on throughput because their concurrency is in-process rather than thread-bounded. `httpz_async` ran into httpbin rate-limiting (10 timeouts) on this pass.
+
+### Cold-start — 10 iterations of (construct + 1 GET)
+
+| Library            | Total (s) | req/s | mean (ms) | p95 (ms) | errors |
+|--------------------|-----------|-------|-----------|----------|--------|
+| curl_cffi_async    |      7.25 |   1.4 |     725.3 |    754.1 |      0 |
+| **httpz**          | **11.17** | **0.9** | **1117.1** | **1596.7** | **0** |
+| aiohttp            |     12.21 |   0.8 |    1220.6 |   1863.9 |      0 |
+| httpx              |     20.05 |   0.5 |    2004.5 |   3619.5 |      0 |
+| requests           |     24.22 |   0.4 |    2421.5 |   3839.2 |      0 |
+| httpx_async        |     31.67 |   0.3 |    3166.9 |  10184.0 |      1 |
+| curl_cffi          |     33.41 |   0.3 |    3340.9 |   8017.2 |      0 |
+| primp              |     36.25 |   0.3 |    3625.5 |   9521.1 |      0 |
+| httpz_async        |     79.58 |   0.1 |    7957.9 |  15009.7 |      3 |
+
+httpz comes in **second only to `curl_cffi_async`** for cold-start cost — better than `httpx`, `requests`, `primp`, and the sync `curl_cffi`. Useful if you spin up short-lived clients in a CLI or worker.
+
+### Sequential POST + JSON — 50 requests
+
+| Library            | Total (s) | req/s | mean (ms) | p95 (ms) | errors |
+|--------------------|-----------|-------|-----------|----------|--------|
+| primp              |     11.56 |   4.3 |     231.2 |    236.6 |      0 |
+| httpz_async        |     11.83 |   4.2 |     236.5 |    250.2 |      0 |
+| curl_cffi          |     11.87 |   4.2 |     237.5 |    247.8 |      0 |
+| httpx              |     12.18 |   4.1 |     243.6 |    247.6 |      0 |
+| **httpz**          | **12.22** | **4.1** | **244.3** | **253.1** | **0** |
+| httpx_async        |     12.64 |   4.0 |     252.8 |    256.9 |      0 |
+| requests           |    173.81 |   0.3 |    3476.1 |  15009.0 |      4 |
+| curl_cffi_async    |    181.52 |   0.2 |    3630.4 |  15009.0 |      6 |
+| aiohttp            |    202.47 |   0.2 |    4049.5 |  15616.0 |      5 |
+
+httpz handles POST + JSON serialization within the same ~12s band as the other healthy clients. `requests`, `aiohttp`, and `curl_cffi_async` hit httpbin's POST rate limit hard on this pass.
+
+### Takeaways
+
+- **Steady-state per-request overhead** is essentially the network. All libraries that didn't get rate-limited finished within ~10 ms of each other per request.
+- **Sync concurrency**: httpz outperforms `httpx` and is roughly 2.3× faster than `requests`.
+- **Cold-start**: httpz is second only to `curl_cffi_async`, beating every other sync client and most async ones.
+- **Async**: aiohttp / httpx_async / curl_cffi_async are the throughput kings for non-fingerprinted workloads.
+
+If you need TLS fingerprint control, httpz is competitive on every axis — and the only Python library where you can hand it any JA3 string with no setup ceremony.
+
+To reproduce: `python benchmarks/run_all.py` (or, for stable numbers, point it at a local server with `--url http://127.0.0.1:8000/`).
+
+---
+
+## Installation
+
+```bash
+pip install httpz
+```
+
+The wheel ships with the prebuilt `httpz_bridge` shared library for Windows, Linux, and macOS.
+
+---
+
+## API Reference
+
+### `httpz.Client`
+
+A **synchronous, session-scoped HTTP client** with first-class TLS-fingerprint control. Modeled after `httpx.Client` so most existing httpx code ports over by changing the import.
+
+Under the hood, every `Client` owns a session inside the Go-side `azuretls-client` runtime (reached via a thin CGO bridge). That session holds the TLS spec, HTTP/2 spec, cookie jar, default headers, proxy, and connection pool — so multiple requests through the same `Client` reuse connections and share cookie state, exactly like a `requests.Session` or `httpx.Client`. When you close the client (explicitly via `.close()`, by exiting a `with` block, or when it's garbage-collected) the Go-side session is torn down and its sockets are released.
+
+**Construction**
+
+```python
+httpz.Client(
+    *,
+    headers=None,           # default headers for every request
+    cookies=None,           # initial cookie jar (dict or httpz.Cookies)
+    proxy=None,             # "http://...", "https://...", or "socks5://..."
+    ja3=None,               # JA3 fingerprint string (requires `browser`)
+    h2_fingerprint=None,    # Akamai-format HTTP/2 fingerprint
+    browser=None,           # "chrome" | "firefox" | "safari" | "edge" | "opera" | "ios"
+    user_agent=None,        # overrides the navigator's default UA
+    impersonate=None,       # one-shot preset (e.g. "chrome131") — sets ja3+h2+UA+browser
+    timeout=None,           # default request timeout, seconds (float)
+    max_redirects=10,       # global cap on redirect chain length
+    verify=True,            # set False to skip TLS cert validation (dev only)
+)
+```
+
+| Argument | Type | What it does |
+|---|---|---|
+| `headers` | `dict \| list \| Headers` | Default headers merged into every request. Per-request `headers=` overrides on a key-by-key basis. |
+| `cookies` | `dict \| Cookies` | Pre-populated cookie jar. Cookies sent by the server are added automatically. |
+| `proxy` | `str` | Upstream proxy. Schemes: `http`, `https`, `socks5`. |
+| `ja3` | `str` | JA3 client fingerprint — rewrites the TLS ClientHello to match. **Requires `browser=`.** |
+| `h2_fingerprint` | `str` | Akamai HTTP/2 fingerprint — controls SETTINGS, WINDOW_UPDATE, pseudo-header order, and PRIORITY frames. |
+| `browser` | `str` | Navigator family that backs the JA3/HTTP/2 stack. Module constants exist: `httpz.CHROME`, `FIREFOX`, `SAFARI`, `EDGE`, `OPERA`, `IOS`. |
+| `user_agent` | `str` | Overrides the default `User-Agent`. |
+| `impersonate` | `str` | Shorthand that resolves to a full preset (`ja3` + `h2_fingerprint` + `browser` + `user_agent`). Any other explicit kwarg you pass **still wins** over the preset. |
+| `timeout` | `float` | Default per-request timeout in seconds. Per-request `timeout=` overrides. |
+| `max_redirects` | `int` | Maximum redirect-chain length before raising `TooManyRedirects`. |
+| `verify` | `bool` | When `False`, TLS certificate verification is skipped. Useful for self-signed certs in development; **never** ship `False` to production. |
+
+**Lifecycle**
+
+- Use as a context manager (`with httpz.Client() as c:`) — the session is closed on exit.
+- Or call `.close()` explicitly. After `.close()` any further request raises `HTTPZError("Client is closed")`.
+- A `__del__` finalizer attempts a best-effort cleanup if you forget — don't rely on it.
+
+**HTTP methods**
+
+All return a `httpz.Response`.
+
+| Method | Signature |
+|---|---|
+| `client.request(method, url, **kw)` | Full-featured request — every other method is sugar over this. |
+| `client.get(url, **kw)` | GET. |
+| `client.post(url, **kw)` | POST. |
+| `client.put(url, **kw)` | PUT. |
+| `client.patch(url, **kw)` | PATCH. |
+| `client.delete(url, **kw)` | DELETE. |
+| `client.head(url, **kw)` | HEAD. |
+| `client.options(url, **kw)` | OPTIONS. |
+
+Shared `**kw` for every method:
+
+| Keyword | Type | Meaning |
+|---|---|---|
+| `headers` | `dict \| list \| Headers` | Per-request headers (merged on top of client defaults; per-request keys win). |
+| `params` | `dict[str, str]` | Query-string parameters; merged with any query string already on `url`. |
+| `json` | `Any` | JSON-serialized into the body; sets `Content-Type: application/json`. |
+| `data` | `dict \| str \| bytes` | Form data when `dict` (`application/x-www-form-urlencoded`); raw otherwise. |
+| `content` | `bytes` | Raw request body for binary payloads. |
+| `timeout` | `float` | Override the client-default timeout for this call only. |
+| `follow_redirects` | `bool` | Defaults to `True`. Set `False` to surface 3xx responses directly. |
+| `max_redirects` | `int` | Per-request redirect cap. |
+
+**Configuration methods**
+
+Reconfigure a *live* session without rebuilding it. Useful when rotating fingerprints or proxies between requests.
+
+| Method | Purpose |
+|---|---|
+| `client.apply_ja3(ja3, browser)` | Replace the active JA3 fingerprint. |
+| `client.apply_h2_fingerprint(fp)` | Replace the active HTTP/2 fingerprint. |
+| `client.set_proxy(url)` | Route subsequent requests through a new proxy. |
+| `client.clear_proxy()` | Stop using a proxy. |
+
+**Attributes**
+
+- `client.headers` — mutable `Headers` instance for the client's default headers (case-insensitive multi-dict).
+- `client.cookies` — the session `Cookies` jar. Read after a response to inspect what the server set; mutate to inject your own.
+
+**Example — everything together**
+
+```python
+import httpz
+
+with httpz.Client(
+    impersonate="chrome131",
+    proxy="socks5://user:pass@127.0.0.1:1080",
+    timeout=30.0,
+    headers={"Accept-Language": "en-US,en;q=0.9"},
+) as client:
+    client.cookies["session"] = "abc123"
+    r = client.get("https://api.example.com/me")
+    r.raise_for_status()
+    print(r.json())
+
+    # Rotate the TLS fingerprint mid-session
+    client.apply_ja3("771,4865-4867-...", browser="chrome")
+    r2 = client.post("https://api.example.com/items", json={"name": "x"})
+```
+
+---
+
+### `httpz.AsyncClient`
+
+The **asyncio-friendly counterpart** to `Client`. Mirrors `httpx.AsyncClient` — same API surface, every I/O method is an `async def` that you `await`.
+
+`AsyncClient` is implemented as a thin async wrapper around `Client`: it constructs a sync `Client` internally, and every request hops into a worker thread via `asyncio.to_thread` so the blocking CGO call never stalls the event loop. **The thread-pool hand-off means async throughput is bounded by `asyncio`'s default thread pool size** (typically `min(32, os.cpu_count() + 4)`) — fine for most workloads, but worth knowing if you're firing hundreds of concurrent requests. For raw event-loop-native concurrency on non-fingerprinted workloads, libraries like `aiohttp` or `httpx_async` will be faster (see the [Benchmarks](#benchmarks) section).
+
+**Construction**
+
+Takes **the exact same keyword arguments as `Client`** (see the table above) — they're forwarded verbatim.
+
+```python
+client = httpz.AsyncClient(
+    impersonate="chrome131",
+    proxy="http://127.0.0.1:8080",
+    timeout=15.0,
+)
+```
+
+**Lifecycle**
+
+- Use as an async context manager: `async with httpz.AsyncClient() as c:` — the session is closed on exit.
+- Or `await client.close()` explicitly.
+
+**HTTP methods**
+
+All `async`. All return a `httpz.Response`. Accept the same `**kw` as the sync client.
+
+```python
+await client.request(method, url, **kw)
+await client.get(url, **kw)
+await client.post(url, **kw)
+await client.put(url, **kw)
+await client.patch(url, **kw)
+await client.delete(url, **kw)
+await client.head(url, **kw)
+await client.options(url, **kw)
+```
+
+**Configuration methods**
+
+```python
+await client.apply_ja3(ja3, browser)
+await client.apply_h2_fingerprint(fp)
+await client.set_proxy(url)
+await client.clear_proxy()
+```
+
+**Attributes**
+
+- `client.headers` — shared with the underlying sync client.
+- `client.cookies` — shared with the underlying sync client.
+
+**Example**
+
+```python
+import asyncio
+import httpz
+
+async def main():
+    async with httpz.AsyncClient(impersonate="chrome131") as client:
+        # Fan out 20 concurrent requests
+        urls = [f"https://httpbin.org/anything/{i}" for i in range(20)]
+        responses = await asyncio.gather(*(client.get(u) for u in urls))
+        for r in responses:
+            print(r.status_code, r.url)
+
+asyncio.run(main())
+```
+
+---
+
+## Credits
+
+- **httpz** is written and maintained by **Shahzain345**.
+- The async client design takes cues from **[aiohttp](https://github.com/aio-libs/aiohttp)** — credit to the aio-libs team for one of the best async HTTP libraries in any language; their work shaped how Python developers think about async HTTP.
+- The TLS engine is **[azuretls-client](https://github.com/Noooste/azuretls-client)** by Noooste — httpz would not exist without it.
+- API surface modeled after **[httpx](https://github.com/encode/httpx)**.
+
+---
+
+## License
+
+MIT.
+
+Copyright © 2026 **Shahzain345**. All rights reserved.
+
+`httpz` is written and maintained by Shahzain345. See [Credits](#credits) for the upstream libraries it builds on.
