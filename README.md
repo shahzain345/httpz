@@ -304,8 +304,10 @@ To reproduce: `python benchmarks/run_all.py` (or, for stable numbers, point it a
 ## Installation
 
 ```bash
-pip install httpz
+pip install pyhttpz
 ```
+
+> The PyPI distribution name is **`pyhttpz`** (the bare `httpz` name was already taken on PyPI). The Python import name is unchanged — once installed, you still write `import httpz`.
 
 The wheel ships with the prebuilt `httpz_bridge` shared library for Windows, Linux, and macOS.
 

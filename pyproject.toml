@@ -3,9 +3,9 @@ requires = ["setuptools>=68.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "httpz"
+name = "pyhttpz"
 version = "0.1.0"
-description = "HTTP client with TLS fingerprint control, backed by azuretls-client"
+description = "HTTP client with TLS fingerprint control, backed by azuretls-client. Installed as `pyhttpz`, imported as `httpz`."
 requires-python = ">=3.9"
 license = {text = "MIT"}
 classifiers = [
