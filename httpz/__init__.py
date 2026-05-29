@@ -7,7 +7,7 @@ Backed by azuretls-client (Go) via shared library.
 """
 
 __title__ = "httpz"
-__version__ = "0.1.0"
+__version__ = "0.1.1"
 
 from .client import Client
 from .async_client import AsyncClient
