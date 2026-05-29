@@ -1,4 +1,8 @@
-# httpz
+<p align="center">
+  <img src="https://gay-fags.discowd.com/r/httpz.png" alt="httpz logo" width="200">
+</p>
+
+<h1 align="center">httpz</h1>
 
 **An HTTP client for Python with first-class TLS fingerprint control.**
 
