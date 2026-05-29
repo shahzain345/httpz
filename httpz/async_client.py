@@ -128,13 +128,21 @@ class AsyncClient:
     def cookies(self) -> Cookies:
         return self._sync.cookies
 
+    @cookies.setter
+    def cookies(self, value):
+        # Delegate to the sync client's coercing setter so `client.cookies = {...}`
+        # (a plain dict) still works.
+        self._sync.cookies = value
+
     @property
     def headers(self) -> Headers:
         return self._sync.headers
 
     @headers.setter
     def headers(self, value):
-        self._sync.headers = Headers(value) if not isinstance(value, Headers) else value
+        # Delegate to the sync client's coercing setter so `client.headers = {...}`
+        # (a plain dict) still works.
+        self._sync.headers = value
 
     def __repr__(self):
         return f"<httpz.AsyncClient [session={self._sync._session_id}]>"

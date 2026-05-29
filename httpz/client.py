@@ -172,6 +172,28 @@ class Client:
         self._proxy = proxy
         self._timeout = timeout
 
+    @property
+    def headers(self) -> Headers:
+        return self._headers
+
+    @headers.setter
+    def headers(self, value) -> None:
+        # Coerce any assigned value (e.g. a plain dict) into a Headers instance so
+        # callers can do `client.headers = {...}` and still get ordered-pair
+        # serialization in request().
+        self._headers = value if isinstance(value, Headers) else Headers(value)
+
+    @property
+    def cookies(self) -> Cookies:
+        return self._cookies
+
+    @cookies.setter
+    def cookies(self, value) -> None:
+        # Coerce any assigned value (e.g. a plain dict) into a Cookies instance so
+        # callers can do `client.cookies = {...}` and still get user_set_items()
+        # and update_from_response() in request().
+        self._cookies = value if isinstance(value, Cookies) else Cookies(value)
+
     def __enter__(self):
         return self
 
