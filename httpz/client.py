@@ -17,6 +17,8 @@ from .headers import Headers, HeaderTypes
 from .cookies import Cookies
 from .exceptions import HTTPZError
 from .presets import resolve_impersonate
+from ._impersonate_headers import default_browser_headers
+from ._types import BrowserTypeLiteral
 
 
 class Client:
@@ -58,6 +60,13 @@ class Client:
         verify: When ``False``, TLS certificate verification is skipped.
             Useful for self-signed certs in development; never ship ``False``
             to production.
+        browser_headers: When ``True`` (default) and a browser navigator is
+            active (via ``impersonate=`` or ``browser=``), httpz also sends that
+            browser's default request headers — client hints (``sec-ch-ua*``),
+            ``Accept``, ``Accept-Language``, ``Sec-Fetch-*``, ``priority`` — so
+            the request looks like a real browser at the HTTP layer, not just at
+            the TLS/HTTP2 handshake. Anything you pass in ``headers=`` overrides
+            these per key. Set ``False`` to send only the headers you specify.
 
     Attributes:
         headers (Headers): Mutable case-insensitive multi-dict of default
@@ -115,10 +124,11 @@ class Client:
         h2_fingerprint: Optional[str] = None,
         browser: Optional[str] = None,
         user_agent: Optional[str] = None,
-        impersonate: Optional[str] = None,
+        impersonate: Optional[BrowserTypeLiteral] = None,
         timeout: Optional[float] = None,
         max_redirects: int = 10,
         verify: bool = True,
+        browser_headers: bool = True,
     ):
         self._closed = True  # safe default until session is created
 
@@ -145,8 +155,6 @@ class Client:
         config: Dict[str, Any] = {}
         if browser:
             config["browser"] = browser
-        if user_agent:
-            config["user_agent"] = user_agent
         if timeout:
             config["timeout_ms"] = int(timeout * 1000)
         if max_redirects != 10:
@@ -161,11 +169,32 @@ class Client:
         if h2_fingerprint:
             config["h2_fingerprint"] = h2_fingerprint
 
-        # Normalize headers. Public attribute so callers can mutate after construction
+        # When emulating a browser, seed the default request headers that browser
+        # always sends (client hints, Accept, Sec-Fetch, ...) so the request
+        # matches a real browser at the HTTP layer, not just the TLS/HTTP2
+        # handshake. Caller-supplied headers override these per key while keeping
+        # the browser's header order; extra caller headers are appended.
+        # Public attribute so callers can mutate after construction
         # (e.g. `client.headers["X-Foo"] = "bar"`), matching the httpx API.
-        self.headers = Headers(headers) if headers else Headers()
+        user_headers = Headers(headers) if headers else Headers()
+        if browser_headers and browser:
+            merged = Headers()
+            for k, v in default_browser_headers(browser, user_agent):
+                merged[k] = user_headers[k] if k in user_headers else v
+            for k, v in user_headers.multi_items():
+                if k not in merged:
+                    merged[k] = v
+            self.headers = merged
+        else:
+            self.headers = user_headers
         if self.headers:
             config["headers"] = self.headers.to_ordered_pairs()
+
+        # The browser default headers carry User-Agent at its natural position.
+        # Only fall back to the separate user_agent config (which the Go layer
+        # appends last) when UA isn't already in the ordered headers.
+        if user_agent and "user-agent" not in self.headers:
+            config["user_agent"] = user_agent
 
         self._session_id = self._bridge.create_session(config)
         self._closed = False

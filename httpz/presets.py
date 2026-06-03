@@ -1,37 +1,1946 @@
 """Browser-impersonate presets.
 
-Loads `_presets.json` (produced by scripts/scrape_fingerprints.py) and exposes
-helpers used by Client/AsyncClient to resolve impersonate=... into a concrete
-JA3 + Akamai (H2) fingerprint + User-Agent + browser navigator.
+Resolves impersonate=... into a concrete JA3 + Akamai (H2) fingerprint +
+User-Agent + browser navigator.
+
+The preset data below is embedded directly in this module (regenerate with
+scripts/scrape_fingerprints.py). It used to live in a separate _presets.json
+data file; inlining it means compiled/bundled builds (PyInstaller, py2exe,
+zipapp, etc.) pick up the presets automatically with no extra data files.
 """
 from __future__ import annotations
 
-import json
-import os
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 
 from .exceptions import HTTPZError
 
-_PRESETS_PATH = os.path.join(os.path.dirname(__file__), "_presets.json")
 
-_DATA: Optional[Dict[str, Any]] = None
-
-
-def _load() -> Dict[str, Any]:
-    global _DATA
-    if _DATA is None:
-        if not os.path.exists(_PRESETS_PATH):
-            _DATA = {"targets": {}, "aliases": {}}
-        else:
-            with open(_PRESETS_PATH, "r", encoding="utf-8") as f:
-                _DATA = json.load(f)
-    return _DATA
+_DATA: Dict[str, Any] = {   'aliases': {   'chrome100': 'chrome100',
+                   'chrome101': 'chrome101',
+                   'chrome104': 'chrome104',
+                   'chrome105': 'chrome_105',
+                   'chrome106': 'chrome_106',
+                   'chrome106a': 'chrome106a',
+                   'chrome107': 'chrome107',
+                   'chrome107a': 'chrome107a',
+                   'chrome108': 'chrome_108',
+                   'chrome108a': 'chrome108a',
+                   'chrome109': 'chrome_109',
+                   'chrome109a': 'chrome109a',
+                   'chrome110': 'chrome110',
+                   'chrome110a': 'chrome110a',
+                   'chrome114': 'chrome_114',
+                   'chrome114a': 'chrome114a',
+                   'chrome116': 'chrome116',
+                   'chrome116a': 'chrome116a',
+                   'chrome117': 'chrome_117',
+                   'chrome117a': 'chrome117a',
+                   'chrome118': 'chrome_118',
+                   'chrome118a': 'chrome118a',
+                   'chrome119': 'chrome119',
+                   'chrome119a': 'chrome119a',
+                   'chrome120': 'chrome120',
+                   'chrome120a': 'chrome120a',
+                   'chrome123': 'chrome123',
+                   'chrome123a': 'chrome123a',
+                   'chrome124': 'chrome124',
+                   'chrome124a': 'chrome124a',
+                   'chrome126': 'chrome_126',
+                   'chrome126a': 'chrome126a',
+                   'chrome127': 'chrome_127',
+                   'chrome127a': 'chrome127a',
+                   'chrome128': 'chrome_128',
+                   'chrome128a': 'chrome128a',
+                   'chrome129': 'chrome_129',
+                   'chrome129a': 'chrome129a',
+                   'chrome130': 'chrome_130',
+                   'chrome130a': 'chrome130a',
+                   'chrome131': 'chrome131',
+                   'chrome131_android': 'chrome131_android',
+                   'chrome131a': 'chrome131a',
+                   'chrome131android': 'chrome131_android',
+                   'chrome132': 'chrome132',
+                   'chrome133': 'chrome_133',
+                   'chrome133a': 'chrome133a',
+                   'chrome133b': 'chrome133b',
+                   'chrome134': 'chrome134',
+                   'chrome135': 'chrome135',
+                   'chrome136': 'chrome136',
+                   'chrome136a': 'chrome136a',
+                   'chrome137': 'chrome137',
+                   'chrome138': 'chrome138',
+                   'chrome139': 'chrome139',
+                   'chrome140': 'chrome140',
+                   'chrome141': 'chrome141',
+                   'chrome142': 'chrome142',
+                   'chrome142a': 'chrome142a',
+                   'chrome143': 'chrome143',
+                   'chrome144': 'chrome144',
+                   'chrome145': 'chrome145',
+                   'chrome145a': 'chrome145a',
+                   'chrome146': 'chrome146',
+                   'chrome146a': 'chrome146a',
+                   'chrome147': 'chrome147',
+                   'chrome148': 'chrome148',
+                   'chrome99': 'chrome99',
+                   'chrome99_android': 'chrome99_android',
+                   'chrome99android': 'chrome99_android',
+                   'chrome_100': 'chrome_100',
+                   'chrome_101': 'chrome_101',
+                   'chrome_104': 'chrome_104',
+                   'chrome_105': 'chrome_105',
+                   'chrome_106': 'chrome_106',
+                   'chrome_107': 'chrome_107',
+                   'chrome_108': 'chrome_108',
+                   'chrome_109': 'chrome_109',
+                   'chrome_114': 'chrome_114',
+                   'chrome_116': 'chrome_116',
+                   'chrome_117': 'chrome_117',
+                   'chrome_118': 'chrome_118',
+                   'chrome_119': 'chrome_119',
+                   'chrome_120': 'chrome_120',
+                   'chrome_123': 'chrome_123',
+                   'chrome_124': 'chrome_124',
+                   'chrome_126': 'chrome_126',
+                   'chrome_127': 'chrome_127',
+                   'chrome_128': 'chrome_128',
+                   'chrome_129': 'chrome_129',
+                   'chrome_130': 'chrome_130',
+                   'chrome_131': 'chrome_131',
+                   'chrome_133': 'chrome_133',
+                   'edge101': 'edge101',
+                   'edge122': 'edge_122',
+                   'edge122a': 'edge122a',
+                   'edge127': 'edge_127',
+                   'edge127a': 'edge127a',
+                   'edge131': 'edge_131',
+                   'edge131a': 'edge131a',
+                   'edge134': 'edge134',
+                   'edge135': 'edge135',
+                   'edge136': 'edge136',
+                   'edge137': 'edge137',
+                   'edge138': 'edge138',
+                   'edge139': 'edge139',
+                   'edge140': 'edge140',
+                   'edge141': 'edge141',
+                   'edge142': 'edge142',
+                   'edge143': 'edge143',
+                   'edge144': 'edge144',
+                   'edge145': 'edge145',
+                   'edge146': 'edge146',
+                   'edge147': 'edge147',
+                   'edge99': 'edge99',
+                   'edge_101': 'edge_101',
+                   'edge_122': 'edge_122',
+                   'edge_127': 'edge_127',
+                   'edge_131': 'edge_131',
+                   'firefox109': 'firefox_109',
+                   'firefox117': 'firefox_117',
+                   'firefox128': 'firefox_128',
+                   'firefox133': 'firefox133',
+                   'firefox135': 'firefox135',
+                   'firefox136': 'firefox136',
+                   'firefox139': 'firefox139',
+                   'firefox142': 'firefox142',
+                   'firefox143': 'firefox143',
+                   'firefox144': 'firefox144',
+                   'firefox145': 'firefox145',
+                   'firefox146': 'firefox146',
+                   'firefox147': 'firefox147',
+                   'firefox148': 'firefox148',
+                   'firefox149': 'firefox149',
+                   'firefox151': 'firefox151',
+                   'firefox_109': 'firefox_109',
+                   'firefox_117': 'firefox_117',
+                   'firefox_128': 'firefox_128',
+                   'firefox_133': 'firefox133',
+                   'firefox_135': 'firefox135',
+                   'firefoxandroid135': 'firefoxandroid135',
+                   'firefoxprivate135': 'firefoxprivate135',
+                   'firefoxprivate136': 'firefoxprivate136',
+                   'opera116': 'opera116',
+                   'opera117': 'opera117',
+                   'opera118': 'opera118',
+                   'opera119': 'opera119',
+                   'opera120': 'opera120',
+                   'opera121': 'opera121',
+                   'opera122': 'opera122',
+                   'opera123': 'opera123',
+                   'opera124': 'opera124',
+                   'opera125': 'opera125',
+                   'opera126': 'opera126',
+                   'opera127': 'opera127',
+                   'opera128': 'opera128',
+                   'opera129': 'opera129',
+                   'opera130': 'opera130',
+                   'safari153': 'safari153',
+                   'safari155': 'safari155',
+                   'safari1561': 'safari_15.6.1',
+                   'safari15_3': 'safari153',
+                   'safari15_5': 'safari155',
+                   'safari16': 'safari_16',
+                   'safari165': 'safari_16.5',
+                   'safari170': 'safari170',
+                   'safari1721': 'safari_17.2.1',
+                   'safari172_ios': 'safari172_ios',
+                   'safari172ios': 'safari172_ios',
+                   'safari1741': 'safari_17.4.1',
+                   'safari175': 'safari_17.5',
+                   'safari17_0': 'safari170',
+                   'safari17_2_ios': 'safari172_ios',
+                   'safari18': 'safari180',
+                   'safari180': 'safari180',
+                   'safari180_ios': 'safari180_ios',
+                   'safari180ios': 'safari180_ios',
+                   'safari182': 'safari_18.2',
+                   'safari183': 'safari183',
+                   'safari1831': 'safari1831',
+                   'safari184': 'safari184',
+                   'safari184_ios': 'safari184_ios',
+                   'safari184ios': 'safari184_ios',
+                   'safari185': 'safari185',
+                   'safari18_0': 'safari180',
+                   'safari18_0_ios': 'safari180_ios',
+                   'safari26': 'safari26',
+                   'safari260': 'safari260',
+                   'safari2601': 'safari2601',
+                   'safari260_ios': 'safari260_ios',
+                   'safari260ios': 'safari260_ios',
+                   'safari261': 'safari261',
+                   'safari262': 'safari262',
+                   'safari_15.3': 'safari_15.3',
+                   'safari_15.5': 'safari_15.5',
+                   'safari_15.6.1': 'safari_15.6.1',
+                   'safari_16': 'safari_16',
+                   'safari_16.5': 'safari_16.5',
+                   'safari_17.0': 'safari170',
+                   'safari_17.2.1': 'safari_17.2.1',
+                   'safari_17.4.1': 'safari_17.4.1',
+                   'safari_17.5': 'safari_17.5',
+                   'safari_18': 'safari180',
+                   'safari_18.2': 'safari_18.2',
+                   'safari_ios_16.5': 'safari_ios_16.5',
+                   'safari_ios_17.2': 'safari172_ios',
+                   'safari_ios_17.4.1': 'safari_ios_17.4.1',
+                   'safari_ios_18.1.1': 'safari_ios_18.1.1',
+                   'safari_ipad_18': 'safari_ipad_18',
+                   'safariios165': 'safari_ios_16.5',
+                   'safariios172': 'safari172_ios',
+                   'safariios1741': 'safari_ios_17.4.1',
+                   'safariios1811': 'safari_ios_18.1.1',
+                   'safariios26': 'safariios26',
+                   'safariios262': 'safariios262',
+                   'safariipad18': 'safari_ipad_18',
+                   'safariipad26': 'safariipad26',
+                   'safariipad262': 'safariipad262',
+                   'tor145': 'tor145'},
+    'probe_url': 'https://tls.peet.ws/api/all',
+    'scraped_at': '2026-06-03T09:34:15.978345+00:00',
+    'targets': {   'chrome100': {   'browser': 'chrome',
+                                    'h2_fingerprint': '1:65536;3:1000;4:6291456;6:262144|15663105|0|m,a,s,p',
+                                    'h2_fingerprint_hash': '4f04edce68a7ecbe689edce7bf5f23f3',
+                                    'ja3': '771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,0-23-65281-10-11-35-16-5-13-18-51-45-43-27-17513-21,29-23-24,0',
+                                    'ja3_hash': 'cd08e31494f9531f560d64c695473da9',
+                                    'source': 'curl_cffi',
+                                    'source_name': 'chrome100',
+                                    'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
+                                                  'AppleWebKit/537.36 (KHTML, like Gecko) '
+                                                  'Chrome/100.0.4896.75 Safari/537.36'},
+                   'chrome101': {   'browser': 'chrome',
+                                    'h2_fingerprint': '1:65536;3:1000;4:6291456;6:262144|15663105|0|m,a,s,p',
+                                    'h2_fingerprint_hash': '4f04edce68a7ecbe689edce7bf5f23f3',
+                                    'ja3': '771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,0-23-65281-10-11-35-16-5-13-18-51-45-43-27-17513-21,29-23-24,0',
+                                    'ja3_hash': 'cd08e31494f9531f560d64c695473da9',
+                                    'source': 'curl_cffi',
+                                    'source_name': 'chrome101',
+                                    'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
+                                                  'AppleWebKit/537.36 (KHTML, like Gecko) '
+                                                  'Chrome/101.0.4951.67 Safari/537.36'},
+                   'chrome104': {   'browser': 'chrome',
+                                    'h2_fingerprint': '1:65536;3:1000;4:6291456;6:262144|15663105|0|m,a,s,p',
+                                    'h2_fingerprint_hash': '4f04edce68a7ecbe689edce7bf5f23f3',
+                                    'ja3': '771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,0-23-65281-10-11-35-16-5-13-18-51-45-43-27-17513-21,29-23-24,0',
+                                    'ja3_hash': 'cd08e31494f9531f560d64c695473da9',
+                                    'source': 'curl_cffi',
+                                    'source_name': 'chrome104',
+                                    'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
+                                                  'AppleWebKit/537.36 (KHTML, like Gecko) '
+                                                  'Chrome/104.0.0.0 Safari/537.36'},
+                   'chrome106a': {   'browser': 'chrome',
+                                     'h2_fingerprint': '1:65536;2:0;3:1000;4:6291456;6:262144|15663105|0|m,a,s,p',
+                                     'h2_fingerprint_hash': 'a345a694846ad9f6c97bcc3c75adbe26',
+                                     'ja3': '771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,43-51-5-45-10-65281-17513-13-27-18-11-16-23-35-0-21,29-23-24,0',
+                                     'ja3_hash': '7159c187385cd3a1c554816d0c841b4d',
+                                     'source': 'wreq',
+                                     'source_name': 'Chrome106',
+                                     'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X '
+                                                   '10_15_7) AppleWebKit/537.36 (KHTML, like '
+                                                   'Gecko) Chrome/106.0.0.0 Safari/537.36'},
+                   'chrome107': {   'browser': 'chrome',
+                                    'h2_fingerprint': '1:65536;2:0;3:1000;4:6291456;6:262144|15663105|0|m,a,s,p',
+                                    'h2_fingerprint_hash': 'a345a694846ad9f6c97bcc3c75adbe26',
+                                    'ja3': '771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,0-23-65281-10-11-35-16-5-13-18-51-45-43-27-17513-21,29-23-24,0',
+                                    'ja3_hash': 'cd08e31494f9531f560d64c695473da9',
+                                    'source': 'curl_cffi',
+                                    'source_name': 'chrome107',
+                                    'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
+                                                  'AppleWebKit/537.36 (KHTML, like Gecko) '
+                                                  'Chrome/107.0.0.0 Safari/537.36'},
+                   'chrome107a': {   'browser': 'chrome',
+                                     'h2_fingerprint': '1:65536;2:0;3:1000;4:6291456;6:262144|15663105|0|m,a,s,p',
+                                     'h2_fingerprint_hash': 'a345a694846ad9f6c97bcc3c75adbe26',
+                                     'ja3': '771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,27-16-13-65281-17513-10-0-45-5-23-43-35-11-18-51-21,29-23-24,0',
+                                     'ja3_hash': 'f2f011edc875ce2fe426aeb5c1a8ef5b',
+                                     'source': 'wreq',
+                                     'source_name': 'Chrome107',
+                                     'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X '
+                                                   '10_15_7) AppleWebKit/537.36 (KHTML, like '
+                                                   'Gecko) Chrome/107.0.0.0 Safari/537.36'},
+                   'chrome108a': {   'browser': 'chrome',
+                                     'h2_fingerprint': '1:65536;2:0;3:1000;4:6291456;6:262144|15663105|0|m,a,s,p',
+                                     'h2_fingerprint_hash': 'a345a694846ad9f6c97bcc3c75adbe26',
+                                     'ja3': '771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,0-10-23-51-35-27-45-18-16-5-13-43-17513-11-65281-21,29-23-24,0',
+                                     'ja3_hash': 'd6dd6e796417fc1ca92bd0a491ac54a1',
+                                     'source': 'wreq',
+                                     'source_name': 'Chrome108',
+                                     'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X '
+                                                   '10_15_7) AppleWebKit/537.36 (KHTML, like '
+                                                   'Gecko) Chrome/108.0.0.0 Safari/537.36'},
+                   'chrome109a': {   'browser': 'chrome',
+                                     'h2_fingerprint': '1:65536;2:0;3:1000;4:6291456;6:262144|15663105|0|m,a,s,p',
+                                     'h2_fingerprint_hash': 'a345a694846ad9f6c97bcc3c75adbe26',
+                                     'ja3': '771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,10-45-5-27-0-51-65281-17513-23-11-13-43-18-16-35-21,29-23-24,0',
+                                     'ja3_hash': '7c998a8bf365bc7c67e72ea75bbf1066',
+                                     'source': 'wreq',
+                                     'source_name': 'Chrome109',
+                                     'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X '
+                                                   '10_15_7) AppleWebKit/537.36 (KHTML, like '
+                                                   'Gecko) Chrome/109.0.0.0 Safari/537.36'},
+                   'chrome110': {   'browser': 'chrome',
+                                    'h2_fingerprint': '1:65536;2:0;3:1000;4:6291456;6:262144|15663105|0|m,a,s,p',
+                                    'h2_fingerprint_hash': 'a345a694846ad9f6c97bcc3c75adbe26',
+                                    'ja3': '771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,27-13-17513-18-51-23-0-35-45-16-11-65281-10-43-5-21,29-23-24,0',
+                                    'ja3_hash': '7ad614f686ce14f8bef99f111ecaf278',
+                                    'source': 'curl_cffi',
+                                    'source_name': 'chrome110',
+                                    'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
+                                                  'AppleWebKit/537.36 (KHTML, like Gecko) '
+                                                  'Chrome/110.0.0.0 Safari/537.36'},
+                   'chrome110a': {   'browser': 'chrome',
+                                     'h2_fingerprint': '1:65536;3:1000;4:6291456;6:262144|15663105|0|m,a,s,p',
+                                     'h2_fingerprint_hash': '4f04edce68a7ecbe689edce7bf5f23f3',
+                                     'ja3': '771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,0-23-65281-10-11-35-16-5-13-18-51-45-43-27-17513-21,29-23-24,0',
+                                     'ja3_hash': 'cd08e31494f9531f560d64c695473da9',
+                                     'source': 'wreq',
+                                     'source_name': 'Chrome110',
+                                     'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X '
+                                                   '10_15_7) AppleWebKit/537.36 (KHTML, like '
+                                                   'Gecko) Chrome/110.0.0.0 Safari/537.36'},
+                   'chrome114a': {   'browser': 'chrome',
+                                     'h2_fingerprint': '1:65536;2:0;3:1000;4:6291456;6:262144|15663105|0|m,a,s,p',
+                                     'h2_fingerprint_hash': 'a345a694846ad9f6c97bcc3c75adbe26',
+                                     'ja3': '771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,11-27-65281-16-5-45-23-10-0-18-17513-35-13-51-43-21,29-23-24,0',
+                                     'ja3_hash': '23b66b575ec677262281125fe34b1579',
+                                     'source': 'wreq',
+                                     'source_name': 'Chrome114',
+                                     'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X '
+                                                   '10_15_7) AppleWebKit/537.36 (KHTML, like '
+                                                   'Gecko) Chrome/114.0.0.0 Safari/537.36'},
+                   'chrome116': {   'browser': 'chrome',
+                                    'h2_fingerprint': '1:65536;2:0;3:1000;4:6291456;6:262144|15663105|0|m,a,s,p',
+                                    'h2_fingerprint_hash': 'a345a694846ad9f6c97bcc3c75adbe26',
+                                    'ja3': '771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,16-23-51-5-45-11-27-13-65281-18-17513-0-35-43-10-21,29-23-24,0',
+                                    'ja3_hash': 'd39b4b376c83f81d7ba14e55cbbfe563',
+                                    'source': 'curl_cffi',
+                                    'source_name': 'chrome116',
+                                    'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
+                                                  'AppleWebKit/537.36 (KHTML, like Gecko) '
+                                                  'Chrome/116.0.0.0 Safari/537.36'},
+                   'chrome116a': {   'browser': 'chrome',
+                                     'h2_fingerprint': '1:65536;2:0;3:1000;4:6291456;6:262144|15663105|0|m,a,s,p',
+                                     'h2_fingerprint_hash': 'a345a694846ad9f6c97bcc3c75adbe26',
+                                     'ja3': '771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,23-27-0-51-43-10-65037-18-16-11-13-17513-5-45-65281-35,29-23-24,0',
+                                     'ja3_hash': 'e10e2de6c80cd2bfbd6bd1b21ece260d',
+                                     'source': 'wreq',
+                                     'source_name': 'Chrome116',
+                                     'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X '
+                                                   '10_15_7) AppleWebKit/537.36 (KHTML, like '
+                                                   'Gecko) Chrome/116.0.0.0 Safari/537.36'},
+                   'chrome117a': {   'browser': 'chrome',
+                                     'h2_fingerprint': '1:65536;2:0;4:6291456;6:262144|15663105|0|m,a,s,p',
+                                     'h2_fingerprint_hash': '52d84b11737d980aef856699f885ca86',
+                                     'ja3': '771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,10-45-65037-27-51-35-17513-0-23-18-65281-5-13-43-11-16,29-23-24,0',
+                                     'ja3_hash': '07351c2077fcb9227c950851426efe18',
+                                     'source': 'wreq',
+                                     'source_name': 'Chrome117',
+                                     'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X '
+                                                   '10_15_7) AppleWebKit/537.36 (KHTML, like '
+                                                   'Gecko) Chrome/117.0.0.0 Safari/537.36'},
+                   'chrome118a': {   'browser': 'chrome',
+                                     'h2_fingerprint': '1:65536;2:0;4:6291456;6:262144|15663105|0|m,a,s,p',
+                                     'h2_fingerprint_hash': '52d84b11737d980aef856699f885ca86',
+                                     'ja3': '771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,27-65037-43-16-23-0-13-45-18-51-65281-10-35-17513-5-11,29-23-24,0',
+                                     'ja3_hash': '97c43d4f931146ef78a469cd965ee8d8',
+                                     'source': 'wreq',
+                                     'source_name': 'Chrome118',
+                                     'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X '
+                                                   '10_15_7) AppleWebKit/537.36 (KHTML, like '
+                                                   'Gecko) Chrome/118.0.0.0 Safari/537.36'},
+                   'chrome119': {   'browser': 'chrome',
+                                    'h2_fingerprint': '1:65536;2:0;4:6291456;6:262144|15663105|0|m,a,s,p',
+                                    'h2_fingerprint_hash': '52d84b11737d980aef856699f885ca86',
+                                    'ja3': '771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,11-18-10-5-65281-16-51-65037-27-43-35-45-23-13-0-17513-21,29-23-24,0',
+                                    'ja3_hash': '1a4079d92d732bdcc18490994a62eb9e',
+                                    'source': 'curl_cffi',
+                                    'source_name': 'chrome119',
+                                    'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) '
+                                                  'AppleWebKit/537.36 (KHTML, like Gecko) '
+                                                  'Chrome/119.0.0.0 Safari/537.36'},
+                   'chrome119a': {   'browser': 'chrome',
+                                     'h2_fingerprint': '1:65536;2:0;4:6291456;6:262144|15663105|0|m,a,s,p',
+                                     'h2_fingerprint_hash': '52d84b11737d980aef856699f885ca86',
+                                     'ja3': '771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,45-18-16-23-10-43-65037-35-17513-5-13-65281-27-0-11-51,29-23-24,0',
+                                     'ja3_hash': 'e5f38e6e5d7018c7e522f8725ff3cbc3',
+                                     'source': 'wreq',
+                                     'source_name': 'Chrome119',
+                                     'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X '
+                                                   '10_15_7) AppleWebKit/537.36 (KHTML, like '
+                                                   'Gecko) Chrome/119.0.0.0 Safari/537.36'},
+                   'chrome120': {   'browser': 'chrome',
+                                    'h2_fingerprint': '1:65536;2:0;4:6291456;6:262144|15663105|0|m,a,s,p',
+                                    'h2_fingerprint_hash': '52d84b11737d980aef856699f885ca86',
+                                    'ja3': '771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,0-23-17513-65037-43-11-65281-27-16-35-10-13-18-5-45-51,29-23-24,0',
+                                    'ja3_hash': 'f09f6a9d08c8e30d3abce69dd6a8dc05',
+                                    'source': 'curl_cffi',
+                                    'source_name': 'chrome120',
+                                    'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) '
+                                                  'AppleWebKit/537.36 (KHTML, like Gecko) '
+                                                  'Chrome/120.0.0.0 Safari/537.36'},
+                   'chrome120a': {   'browser': 'chrome',
+                                     'h2_fingerprint': '1:65536;2:0;4:6291456;6:262144|15663105|0|m,a,s,p',
+                                     'h2_fingerprint_hash': '52d84b11737d980aef856699f885ca86',
+                                     'ja3': '771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,17513-27-35-5-23-18-51-45-16-65281-0-11-10-65037-43-13-21,29-23-24,0',
+                                     'ja3_hash': 'ecdf5d76fb8e37f9fdc158d276662069',
+                                     'source': 'wreq',
+                                     'source_name': 'Chrome120',
+                                     'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X '
+                                                   '10_15_7) AppleWebKit/537.36 (KHTML, like '
+                                                   'Gecko) Chrome/120.0.0.0 Safari/537.36'},
+                   'chrome123': {   'browser': 'chrome',
+                                    'h2_fingerprint': '1:65536;2:0;4:6291456;6:262144|15663105|0|m,a,s,p',
+                                    'h2_fingerprint_hash': '52d84b11737d980aef856699f885ca86',
+                                    'ja3': '771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,51-45-17513-35-18-27-23-0-13-43-65037-16-10-11-65281-5,29-23-24,0',
+                                    'ja3_hash': '77a3ddcdcbb57bdb8ea1d0ba45a7452f',
+                                    'source': 'curl_cffi',
+                                    'source_name': 'chrome123',
+                                    'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) '
+                                                  'AppleWebKit/537.36 (KHTML, like Gecko) '
+                                                  'Chrome/123.0.0.0 Safari/537.36'},
+                   'chrome123a': {   'browser': 'chrome',
+                                     'h2_fingerprint': '1:65536;2:0;4:6291456;6:262144|15663105|0|m,a,s,p',
+                                     'h2_fingerprint_hash': '52d84b11737d980aef856699f885ca86',
+                                     'ja3': '771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,35-18-27-0-16-5-11-51-23-43-65037-45-10-17513-65281-13,29-23-24,0',
+                                     'ja3_hash': '6cf80d6b35f33ad38982f3fdf27bd6b8',
+                                     'source': 'wreq',
+                                     'source_name': 'Chrome123',
+                                     'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X '
+                                                   '10_15_7) AppleWebKit/537.36 (KHTML, like '
+                                                   'Gecko) Chrome/123.0.0.0 Safari/537.36'},
+                   'chrome124': {   'browser': 'chrome',
+                                    'h2_fingerprint': '1:65536;2:0;4:6291456;6:262144|15663105|0|m,a,s,p',
+                                    'h2_fingerprint_hash': '52d84b11737d980aef856699f885ca86',
+                                    'ja3': '771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,18-65037-13-17513-16-27-10-51-5-45-43-23-65281-0-35-11,25497-29-23-24,0',
+                                    'ja3_hash': '9969f4ea2da671b85bb9da2db31a560c',
+                                    'source': 'curl_cffi',
+                                    'source_name': 'chrome124',
+                                    'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) '
+                                                  'AppleWebKit/537.36 (KHTML, like Gecko) '
+                                                  'Chrome/124.0.0.0 Safari/537.36'},
+                   'chrome124a': {   'browser': 'chrome',
+                                     'h2_fingerprint': '1:65536;2:0;4:6291456;6:262144|15663105|0|m,a,s,p',
+                                     'h2_fingerprint_hash': '52d84b11737d980aef856699f885ca86',
+                                     'ja3': '771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,65281-10-11-27-43-13-45-23-5-18-16-0-51-35-17513-65037,25497-29-23-24,0',
+                                     'ja3_hash': '8fa8ff1a5a8f7d8feda683150cf73b52',
+                                     'source': 'wreq',
+                                     'source_name': 'Chrome124',
+                                     'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X '
+                                                   '10_15_7) AppleWebKit/537.36 (KHTML, like '
+                                                   'Gecko) Chrome/124.0.0.0 Safari/537.36'},
+                   'chrome126a': {   'browser': 'chrome',
+                                     'h2_fingerprint': '1:65536;2:0;4:6291456;6:262144|15663105|0|m,a,s,p',
+                                     'h2_fingerprint_hash': '52d84b11737d980aef856699f885ca86',
+                                     'ja3': '771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,17513-65037-65281-16-27-45-23-51-18-5-43-13-0-10-35-11,25497-29-23-24,0',
+                                     'ja3_hash': '68ef972c5ddb72df1527cb3a36a241fa',
+                                     'source': 'wreq',
+                                     'source_name': 'Chrome126',
+                                     'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X '
+                                                   '10_15_7) AppleWebKit/537.36 (KHTML, like '
+                                                   'Gecko) Chrome/126.0.0.0 Safari/537.36'},
+                   'chrome127a': {   'browser': 'chrome',
+                                     'h2_fingerprint': '1:65536;2:0;4:6291456;6:262144|15663105|0|m,a,s,p',
+                                     'h2_fingerprint_hash': '52d84b11737d980aef856699f885ca86',
+                                     'ja3': '771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,18-11-16-5-65037-27-13-65281-51-0-10-23-43-17513-35-45,25497-29-23-24,0',
+                                     'ja3_hash': '0be229367b2b752202976521863ce66a',
+                                     'source': 'wreq',
+                                     'source_name': 'Chrome127',
+                                     'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X '
+                                                   '10_15_7) AppleWebKit/537.36 (KHTML, like '
+                                                   'Gecko) Chrome/127.0.0.0 Safari/537.36'},
+                   'chrome128a': {   'browser': 'chrome',
+                                     'h2_fingerprint': '1:65536;2:0;4:6291456;6:262144|15663105|0|m,a,s,p',
+                                     'h2_fingerprint_hash': '52d84b11737d980aef856699f885ca86',
+                                     'ja3': '771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,65281-16-51-65037-27-18-23-43-45-5-0-11-17513-35-13-10,25497-29-23-24,0',
+                                     'ja3_hash': '45aa4a095e75b78184e6698a5d060fe3',
+                                     'source': 'wreq',
+                                     'source_name': 'Chrome128',
+                                     'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X '
+                                                   '10_15_7) AppleWebKit/537.36 (KHTML, like '
+                                                   'Gecko) Chrome/128.0.0.0 Safari/537.36'},
+                   'chrome129a': {   'browser': 'chrome',
+                                     'h2_fingerprint': '1:65536;2:0;4:6291456;6:262144|15663105|0|m,a,s,p',
+                                     'h2_fingerprint_hash': '52d84b11737d980aef856699f885ca86',
+                                     'ja3': '771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,11-65037-10-17513-35-0-5-16-45-23-18-27-43-51-65281-13,25497-29-23-24,0',
+                                     'ja3_hash': 'be1fd4483a7c50a7ce50e3768aa636fa',
+                                     'source': 'wreq',
+                                     'source_name': 'Chrome129',
+                                     'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X '
+                                                   '10_15_7) AppleWebKit/537.36 (KHTML, like '
+                                                   'Gecko) Chrome/129.0.0.0 Safari/537.36'},
+                   'chrome130a': {   'browser': 'chrome',
+                                     'h2_fingerprint': '1:65536;2:0;4:6291456;6:262144|15663105|0|m,a,s,p',
+                                     'h2_fingerprint_hash': '52d84b11737d980aef856699f885ca86',
+                                     'ja3': '771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,0-16-11-23-5-27-35-65281-65037-10-18-17513-13-43-45-51,25497-29-23-24,0',
+                                     'ja3_hash': 'cf90047713ac6fed2089a13202c6d1e9',
+                                     'source': 'wreq',
+                                     'source_name': 'Chrome130',
+                                     'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X '
+                                                   '10_15_7) AppleWebKit/537.36 (KHTML, like '
+                                                   'Gecko) Chrome/130.0.0.0 Safari/537.36'},
+                   'chrome131': {   'browser': 'chrome',
+                                    'h2_fingerprint': '1:65536;2:0;4:6291456;6:262144|15663105|0|m,a,s,p',
+                                    'h2_fingerprint_hash': '52d84b11737d980aef856699f885ca86',
+                                    'ja3': '771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,35-51-43-11-0-65037-13-18-16-23-10-65281-27-17513-5-45,4588-29-23-24,0',
+                                    'ja3_hash': '589aac279d96bb31b63a6c7af5605134',
+                                    'source': 'curl_cffi',
+                                    'source_name': 'chrome131',
+                                    'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) '
+                                                  'AppleWebKit/537.36 (KHTML, like Gecko) '
+                                                  'Chrome/131.0.0.0 Safari/537.36'},
+                   'chrome131_android': {   'browser': 'chrome',
+                                            'h2_fingerprint': '1:65536;2:0;4:6291456;6:262144|15663105|0|m,a,s,p',
+                                            'h2_fingerprint_hash': '52d84b11737d980aef856699f885ca86',
+                                            'ja3': '771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,65037-10-17513-27-45-51-5-0-13-23-35-18-11-65281-43-16,29-23-24,0',
+                                            'ja3_hash': 'eb3304ced4141735380313952d7e788a',
+                                            'source': 'curl_cffi',
+                                            'source_name': 'chrome131_android',
+                                            'user_agent': 'Mozilla/5.0 (Linux; Android 10; K) '
+                                                          'AppleWebKit/537.36 (KHTML, like Gecko) '
+                                                          'Chrome/131.0.0.0 Mobile Safari/537.36'},
+                   'chrome131a': {   'browser': 'chrome',
+                                     'h2_fingerprint': '1:65536;2:0;4:6291456;6:262144|15663105|0|m,a,s,p',
+                                     'h2_fingerprint_hash': '52d84b11737d980aef856699f885ca86',
+                                     'ja3': '771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,43-16-65037-0-45-65281-27-51-13-23-17513-35-10-11-5-18,4588-29-23-24,0',
+                                     'ja3_hash': 'b28277405641d606bbf5a9ecdd794edc',
+                                     'source': 'wreq',
+                                     'source_name': 'Chrome131',
+                                     'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X '
+                                                   '10_15_7) AppleWebKit/537.36 (KHTML, like '
+                                                   'Gecko) Chrome/131.0.0.0 Safari/537.36'},
+                   'chrome132': {   'browser': 'chrome',
+                                    'h2_fingerprint': '1:65536;2:0;4:6291456;6:262144|15663105|0|m,a,s,p',
+                                    'h2_fingerprint_hash': '52d84b11737d980aef856699f885ca86',
+                                    'ja3': '771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,51-23-16-17613-43-35-11-10-65037-18-5-0-45-65281-13-27,4588-29-23-24,0',
+                                    'ja3_hash': '2ee564105c0770c516f537805825827b',
+                                    'source': 'wreq',
+                                    'source_name': 'Chrome132',
+                                    'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) '
+                                                  'AppleWebKit/537.36 (KHTML, like Gecko) '
+                                                  'Chrome/132.0.0.0 Safari/537.36'},
+                   'chrome133a': {   'browser': 'chrome',
+                                     'h2_fingerprint': '1:65536;2:0;4:6291456;6:262144|15663105|0|m,a,s,p',
+                                     'h2_fingerprint_hash': '52d84b11737d980aef856699f885ca86',
+                                     'ja3': '771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,27-5-43-23-65281-18-11-17613-10-35-13-45-65037-16-0-51,4588-29-23-24,0',
+                                     'ja3_hash': 'fbd953bbd82d2e6596c10c61ae955293',
+                                     'source': 'curl_cffi',
+                                     'source_name': 'chrome133a',
+                                     'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X '
+                                                   '10_15_7) AppleWebKit/537.36 (KHTML, like '
+                                                   'Gecko) Chrome/133.0.0.0 Safari/537.36'},
+                   'chrome133b': {   'browser': 'chrome',
+                                     'h2_fingerprint': '1:65536;2:0;4:6291456;6:262144|15663105|0|m,a,s,p',
+                                     'h2_fingerprint_hash': '52d84b11737d980aef856699f885ca86',
+                                     'ja3': '771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,27-16-13-18-45-51-17613-43-0-65281-35-65037-23-11-10-5,4588-29-23-24,0',
+                                     'ja3_hash': 'e8efa1fca105597598d9dcba4b3ac319',
+                                     'source': 'wreq',
+                                     'source_name': 'Chrome133',
+                                     'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X '
+                                                   '10_15_7) AppleWebKit/537.36 (KHTML, like '
+                                                   'Gecko) Chrome/133.0.0.0 Safari/537.36'},
+                   'chrome134': {   'browser': 'chrome',
+                                    'h2_fingerprint': '1:65536;2:0;4:6291456;6:262144|15663105|0|m,a,s,p',
+                                    'h2_fingerprint_hash': '52d84b11737d980aef856699f885ca86',
+                                    'ja3': '771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,45-13-16-65037-18-35-65281-51-11-10-27-23-17613-43-0-5,4588-29-23-24,0',
+                                    'ja3_hash': 'd9977215ae9050478dce9b05cfd292b7',
+                                    'source': 'wreq',
+                                    'source_name': 'Chrome134',
+                                    'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) '
+                                                  'AppleWebKit/537.36 (KHTML, like Gecko) '
+                                                  'Chrome/134.0.0.0 Safari/537.36'},
+                   'chrome135': {   'browser': 'chrome',
+                                    'h2_fingerprint': '1:65536;2:0;4:6291456;6:262144|15663105|0|m,a,s,p',
+                                    'h2_fingerprint_hash': '52d84b11737d980aef856699f885ca86',
+                                    'ja3': '771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,11-51-23-18-13-27-0-65281-5-10-45-35-43-65037-17613-16,4588-29-23-24,0',
+                                    'ja3_hash': '5cc8f8e486658092caaedd10ab132685',
+                                    'source': 'wreq',
+                                    'source_name': 'Chrome135',
+                                    'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) '
+                                                  'AppleWebKit/537.36 (KHTML, like Gecko) '
+                                                  'Chrome/135.0.0.0 Safari/537.36'},
+                   'chrome136': {   'browser': 'chrome',
+                                    'h2_fingerprint': '1:65536;2:0;4:6291456;6:262144|15663105|0|m,a,s,p',
+                                    'h2_fingerprint_hash': '52d84b11737d980aef856699f885ca86',
+                                    'ja3': '771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,17613-16-45-65281-35-18-11-51-10-0-13-27-5-65037-43-23,4588-29-23-24,0',
+                                    'ja3_hash': '03b66647a48647f2de625f48c968d7fc',
+                                    'source': 'curl_cffi',
+                                    'source_name': 'chrome136',
+                                    'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) '
+                                                  'AppleWebKit/537.36 (KHTML, like Gecko) '
+                                                  'Chrome/136.0.0.0 Safari/537.36'},
+                   'chrome136a': {   'browser': 'chrome',
+                                     'h2_fingerprint': '1:65536;2:0;4:6291456;6:262144|15663105|0|m,a,s,p',
+                                     'h2_fingerprint_hash': '52d84b11737d980aef856699f885ca86',
+                                     'ja3': '771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,51-65281-43-65037-45-17613-18-11-0-5-23-13-35-27-16-10,4588-29-23-24,0',
+                                     'ja3_hash': '44198cad4408060597fadcd5a7df3365',
+                                     'source': 'wreq',
+                                     'source_name': 'Chrome136',
+                                     'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X '
+                                                   '10_15_7) AppleWebKit/537.36 (KHTML, like '
+                                                   'Gecko) Chrome/136.0.0.0 Safari/537.36'},
+                   'chrome137': {   'browser': 'chrome',
+                                    'h2_fingerprint': '1:65536;2:0;4:6291456;6:262144|15663105|0|m,a,s,p',
+                                    'h2_fingerprint_hash': '52d84b11737d980aef856699f885ca86',
+                                    'ja3': '771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,0-35-27-18-13-43-45-11-65281-23-5-65037-51-10-17613-16,4588-29-23-24,0',
+                                    'ja3_hash': '8310d055c553e5279eb6478e7f8c0b91',
+                                    'source': 'wreq',
+                                    'source_name': 'Chrome137',
+                                    'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) '
+                                                  'AppleWebKit/537.36 (KHTML, like Gecko) '
+                                                  'Chrome/137.0.0.0 Safari/537.36'},
+                   'chrome138': {   'browser': 'chrome',
+                                    'h2_fingerprint': '1:65536;2:0;4:6291456;6:262144|15663105|0|m,a,s,p',
+                                    'h2_fingerprint_hash': '52d84b11737d980aef856699f885ca86',
+                                    'ja3': '771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,16-23-51-65281-18-43-10-5-65037-13-17613-35-27-11-45-0,4588-29-23-24,0',
+                                    'ja3_hash': '82922864db831dc9289755bd53cbb8fa',
+                                    'source': 'wreq',
+                                    'source_name': 'Chrome138',
+                                    'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) '
+                                                  'AppleWebKit/537.36 (KHTML, like Gecko) '
+                                                  'Chrome/138.0.0.0 Safari/537.36'},
+                   'chrome139': {   'browser': 'chrome',
+                                    'h2_fingerprint': '1:65536;2:0;4:6291456;6:262144|15663105|0|m,a,s,p',
+                                    'h2_fingerprint_hash': '52d84b11737d980aef856699f885ca86',
+                                    'ja3': '771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,65281-10-45-16-17613-43-51-27-65037-0-5-35-13-11-18-23,4588-29-23-24,0',
+                                    'ja3_hash': '976e4f7c7917340d06840aeecff3b114',
+                                    'source': 'wreq',
+                                    'source_name': 'Chrome139',
+                                    'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) '
+                                                  'AppleWebKit/537.36 (KHTML, like Gecko) '
+                                                  'Chrome/139.0.0.0 Safari/537.36'},
+                   'chrome140': {   'browser': 'chrome',
+                                    'h2_fingerprint': '1:65536;2:0;4:6291456;6:262144|15663105|0|m,a,s,p',
+                                    'h2_fingerprint_hash': '52d84b11737d980aef856699f885ca86',
+                                    'ja3': '771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,13-65037-23-35-51-45-11-5-27-43-10-0-65281-16-17613-18,4588-29-23-24,0',
+                                    'ja3_hash': '834c92b61c3bc3e5ee413de81d0609ef',
+                                    'source': 'wreq',
+                                    'source_name': 'Chrome140',
+                                    'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) '
+                                                  'AppleWebKit/537.36 (KHTML, like Gecko) '
+                                                  'Chrome/140.0.0.0 Safari/537.36'},
+                   'chrome141': {   'browser': 'chrome',
+                                    'h2_fingerprint': '1:65536;2:0;4:6291456;6:262144|15663105|0|m,a,s,p',
+                                    'h2_fingerprint_hash': '52d84b11737d980aef856699f885ca86',
+                                    'ja3': '771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,43-18-11-35-23-5-45-0-27-65037-65281-16-17613-10-51-13,4588-29-23-24,0',
+                                    'ja3_hash': '48cbc3d0084412fe313dfadac502cbff',
+                                    'source': 'wreq',
+                                    'source_name': 'Chrome141',
+                                    'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) '
+                                                  'AppleWebKit/537.36 (KHTML, like Gecko) '
+                                                  'Chrome/141.0.0.0 Safari/537.36'},
+                   'chrome142': {   'browser': 'chrome',
+                                    'h2_fingerprint': '1:65536;2:0;4:6291456;6:262144|15663105|0|m,a,s,p',
+                                    'h2_fingerprint_hash': '52d84b11737d980aef856699f885ca86',
+                                    'ja3': '771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,18-65281-23-65037-17613-51-0-43-13-16-27-45-11-5-10-35,4588-29-23-24,0',
+                                    'ja3_hash': '7f0d96f06f4510d02a1c3bd10cdde5a2',
+                                    'source': 'curl_cffi',
+                                    'source_name': 'chrome142',
+                                    'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) '
+                                                  'AppleWebKit/537.36 (KHTML, like Gecko) '
+                                                  'Chrome/142.0.0.0 Safari/537.36'},
+                   'chrome142a': {   'browser': 'chrome',
+                                     'h2_fingerprint': '1:65536;2:0;4:6291456;6:262144|15663105|0|m,a,s,p',
+                                     'h2_fingerprint_hash': '52d84b11737d980aef856699f885ca86',
+                                     'ja3': '771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,65281-65037-18-35-17613-10-5-27-0-16-45-23-11-43-13-51,4588-29-23-24,0',
+                                     'ja3_hash': '3f0b7ae4a162d7d8a77168fbac3445dd',
+                                     'source': 'wreq',
+                                     'source_name': 'Chrome142',
+                                     'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X '
+                                                   '10_15_7) AppleWebKit/537.36 (KHTML, like '
+                                                   'Gecko) Chrome/142.0.0.0 Safari/537.36'},
+                   'chrome143': {   'browser': 'chrome',
+                                    'h2_fingerprint': '1:65536;2:0;4:6291456;6:262144|15663105|0|m,a,s,p',
+                                    'h2_fingerprint_hash': '52d84b11737d980aef856699f885ca86',
+                                    'ja3': '771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,45-23-65281-0-27-16-43-11-10-18-13-35-5-51-17613-65037,4588-29-23-24,0',
+                                    'ja3_hash': '44147417940476685221bfdcd2b58229',
+                                    'source': 'wreq',
+                                    'source_name': 'Chrome143',
+                                    'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) '
+                                                  'AppleWebKit/537.36 (KHTML, like Gecko) '
+                                                  'Chrome/143.0.0.0 Safari/537.36'},
+                   'chrome144': {   'browser': 'chrome',
+                                    'h2_fingerprint': '1:65536;2:0;4:6291456;6:262144|15663105|0|m,a,s,p',
+                                    'h2_fingerprint_hash': '52d84b11737d980aef856699f885ca86',
+                                    'ja3': '771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,16-11-51-10-0-13-5-43-65281-27-17613-65037-35-18-23-45,4588-29-23-24,0',
+                                    'ja3_hash': '4376686e2eb80a1b7586bcf8efd0799c',
+                                    'source': 'wreq',
+                                    'source_name': 'Chrome144',
+                                    'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) '
+                                                  'AppleWebKit/537.36 (KHTML, like Gecko) '
+                                                  'Chrome/144.0.0.0 Safari/537.36'},
+                   'chrome145': {   'browser': 'chrome',
+                                    'h2_fingerprint': '1:65536;2:0;4:6291456;6:262144|15663105|0|m,a,s,p',
+                                    'h2_fingerprint_hash': '52d84b11737d980aef856699f885ca86',
+                                    'ja3': '771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,23-35-5-11-65281-51-10-13-43-17613-18-45-0-16-65037-27,4588-29-23-24,0',
+                                    'ja3_hash': '3b677cfd136709849cf9c78c58ff51bd',
+                                    'source': 'curl_cffi',
+                                    'source_name': 'chrome145',
+                                    'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) '
+                                                  'AppleWebKit/537.36 (KHTML, like Gecko) '
+                                                  'Chrome/145.0.0.0 Safari/537.36'},
+                   'chrome145a': {   'browser': 'chrome',
+                                     'h2_fingerprint': '1:65536;2:0;4:6291456;6:262144|15663105|0|m,a,s,p',
+                                     'h2_fingerprint_hash': '52d84b11737d980aef856699f885ca86',
+                                     'ja3': '771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,27-13-11-16-5-65037-17613-35-45-23-43-51-0-18-65281-10,4588-29-23-24,0',
+                                     'ja3_hash': '642afdc201845ac25b07644440c4784f',
+                                     'source': 'wreq',
+                                     'source_name': 'Chrome145',
+                                     'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X '
+                                                   '10_15_7) AppleWebKit/537.36 (KHTML, like '
+                                                   'Gecko) Chrome/145.0.0.0 Safari/537.36'},
+                   'chrome146': {   'browser': 'chrome',
+                                    'h2_fingerprint': '1:65536;2:0;4:6291456;6:262144|15663105|0|m,a,s,p',
+                                    'h2_fingerprint_hash': '52d84b11737d980aef856699f885ca86',
+                                    'ja3': '771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,65281-27-17613-43-5-35-11-51-45-0-65037-13-10-16-18-23,4588-29-23-24,0',
+                                    'ja3_hash': '7bd3b485fe83354c50a4db6fa923c884',
+                                    'source': 'curl_cffi',
+                                    'source_name': 'chrome146',
+                                    'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) '
+                                                  'AppleWebKit/537.36 (KHTML, like Gecko) '
+                                                  'Chrome/146.0.0.0 Safari/537.36'},
+                   'chrome146a': {   'browser': 'chrome',
+                                     'h2_fingerprint': '1:65536;2:0;4:6291456;6:262144|15663105|0|m,a,s,p',
+                                     'h2_fingerprint_hash': '52d84b11737d980aef856699f885ca86',
+                                     'ja3': '771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,65281-11-18-10-13-23-65037-43-16-45-51-17613-0-5-27-35,4588-29-23-24,0',
+                                     'ja3_hash': '2b216169b6ca1ab96fe99b5ffec6cd8e',
+                                     'source': 'wreq',
+                                     'source_name': 'Chrome146',
+                                     'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X '
+                                                   '10_15_7) AppleWebKit/537.36 (KHTML, like '
+                                                   'Gecko) Chrome/146.0.0.0 Safari/537.36'},
+                   'chrome147': {   'browser': 'chrome',
+                                    'h2_fingerprint': '1:65536;2:0;4:6291456;6:262144|15663105|0|m,a,s,p',
+                                    'h2_fingerprint_hash': '52d84b11737d980aef856699f885ca86',
+                                    'ja3': '771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,0-35-17613-23-65037-18-16-27-43-65281-51-5-11-10-45-13,4588-29-23-24,0',
+                                    'ja3_hash': '5fb4ffb58eef6f98bae3e8603fcff184',
+                                    'source': 'wreq',
+                                    'source_name': 'Chrome147',
+                                    'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) '
+                                                  'AppleWebKit/537.36 (KHTML, like Gecko) '
+                                                  'Chrome/147.0.0.0 Safari/537.36'},
+                   'chrome148': {   'browser': 'chrome',
+                                    'h2_fingerprint': '1:65536;2:0;4:6291456;6:262144|15663105|0|m,a,s,p',
+                                    'h2_fingerprint_hash': '52d84b11737d980aef856699f885ca86',
+                                    'ja3': '771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,35-65281-11-18-43-10-45-16-0-17613-5-23-27-13-65037-51,4588-29-23-24,0',
+                                    'ja3_hash': '2e3999cda23d9bff7ce0e5fbe42ee2f2',
+                                    'source': 'manual',
+                                    'source_name': 'chrome148',
+                                    'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) '
+                                                  'AppleWebKit/537.36 (KHTML, like Gecko) '
+                                                  'Chrome/148.0.0.0 Safari/537.36'},
+                   'chrome99': {   'browser': 'chrome',
+                                   'h2_fingerprint': '1:65536;3:1000;4:6291456;6:262144|15663105|0|m,a,s,p',
+                                   'h2_fingerprint_hash': '4f04edce68a7ecbe689edce7bf5f23f3',
+                                   'ja3': '771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,0-23-65281-10-11-35-16-5-13-18-51-45-43-27-17513-21,29-23-24,0',
+                                   'ja3_hash': 'cd08e31494f9531f560d64c695473da9',
+                                   'source': 'curl_cffi',
+                                   'source_name': 'chrome99',
+                                   'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
+                                                 'AppleWebKit/537.36 (KHTML, like Gecko) '
+                                                 'Chrome/99.0.4844.51 Safari/537.36'},
+                   'chrome99_android': {   'browser': 'chrome',
+                                           'h2_fingerprint': '1:65536;3:1000;4:6291456;6:262144|15663105|0|m,a,s,p',
+                                           'h2_fingerprint_hash': '4f04edce68a7ecbe689edce7bf5f23f3',
+                                           'ja3': '771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,0-23-65281-10-11-35-16-5-13-18-51-45-43-27-17513-21,29-23-24,0',
+                                           'ja3_hash': 'cd08e31494f9531f560d64c695473da9',
+                                           'source': 'curl_cffi',
+                                           'source_name': 'chrome99_android',
+                                           'user_agent': 'Mozilla/5.0 (Linux; Android 12; Pixel 6) '
+                                                         'AppleWebKit/537.36 (KHTML, like Gecko) '
+                                                         'Chrome/99.0.4844.58 Mobile '
+                                                         'Safari/537.36'},
+                   'chrome_100': {   'browser': 'chrome',
+                                     'h2_fingerprint': '1:65536;3:1000;4:6291456;6:262144|15663105|0|m,a,s,p',
+                                     'h2_fingerprint_hash': '4f04edce68a7ecbe689edce7bf5f23f3',
+                                     'ja3': '771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,0-23-65281-10-11-35-16-5-13-18-51-45-43-27-17513-21,29-23-24,0',
+                                     'ja3_hash': 'cd08e31494f9531f560d64c695473da9',
+                                     'source': 'primp',
+                                     'source_name': 'chrome_100',
+                                     'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X '
+                                                   '10_15_7) AppleWebKit/537.36 (KHTML, like '
+                                                   'Gecko) Chrome/100.0.4896.75 Safari/537.36'},
+                   'chrome_101': {   'browser': 'chrome',
+                                     'h2_fingerprint': '1:65536;3:1000;4:6291456;6:262144|15663105|0|m,a,s,p',
+                                     'h2_fingerprint_hash': '4f04edce68a7ecbe689edce7bf5f23f3',
+                                     'ja3': '771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,0-23-65281-10-11-35-16-5-13-18-51-45-43-27-17513-21,29-23-24,0',
+                                     'ja3_hash': 'cd08e31494f9531f560d64c695473da9',
+                                     'source': 'primp',
+                                     'source_name': 'chrome_101',
+                                     'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X '
+                                                   '10_15_7) AppleWebKit/537.36 (KHTML, like '
+                                                   'Gecko) Chrome/101.0.4951.67 Safari/537.36'},
+                   'chrome_104': {   'browser': 'chrome',
+                                     'h2_fingerprint': '1:65536;3:1000;4:6291456;6:262144|15663105|0|m,a,s,p',
+                                     'h2_fingerprint_hash': '4f04edce68a7ecbe689edce7bf5f23f3',
+                                     'ja3': '771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,0-23-65281-10-11-35-16-5-13-18-51-45-43-27-17513-21,29-23-24,0',
+                                     'ja3_hash': 'cd08e31494f9531f560d64c695473da9',
+                                     'source': 'primp',
+                                     'source_name': 'chrome_104',
+                                     'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X '
+                                                   '10_15_7) AppleWebKit/537.36 (KHTML, like '
+                                                   'Gecko) Chrome/104.0.0.0 Safari/537.36'},
+                   'chrome_105': {   'browser': 'chrome',
+                                     'h2_fingerprint': '1:65536;3:1000;4:6291456;6:262144|15663105|0|m,a,s,p',
+                                     'h2_fingerprint_hash': '4f04edce68a7ecbe689edce7bf5f23f3',
+                                     'ja3': '771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,0-65037-23-65281-10-11-35-16-5-13-18-51-45-43-27-17513,29-23-24,0',
+                                     'ja3_hash': 'ac1f9882adc4efbbc3ea2f343aeabdda',
+                                     'source': 'primp',
+                                     'source_name': 'chrome_105',
+                                     'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X '
+                                                   '10_15_7) AppleWebKit/537.36 (KHTML, like '
+                                                   'Gecko) Chrome/105.0.0.0 Safari/537.36'},
+                   'chrome_106': {   'browser': 'chrome',
+                                     'h2_fingerprint': '1:65536;2:0;3:1000;4:6291456;6:262144|15663105|0|m,a,s,p',
+                                     'h2_fingerprint_hash': 'a345a694846ad9f6c97bcc3c75adbe26',
+                                     'ja3': '771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,35-0-23-45-11-10-65281-18-17513-43-27-5-13-51-16-21,29-23-24,0',
+                                     'ja3_hash': 'fc33755889dba85ebcef82a552f724f6',
+                                     'source': 'primp',
+                                     'source_name': 'chrome_106',
+                                     'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X '
+                                                   '10_15_7) AppleWebKit/537.36 (KHTML, like '
+                                                   'Gecko) Chrome/106.0.0.0 Safari/537.36'},
+                   'chrome_107': {   'browser': 'chrome',
+                                     'h2_fingerprint': '1:65536;2:0;3:1000;4:6291456;6:262144|15663105|0|m,a,s,p',
+                                     'h2_fingerprint_hash': 'a345a694846ad9f6c97bcc3c75adbe26',
+                                     'ja3': '771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,23-27-43-0-17513-16-51-18-45-10-13-65281-11-5-35-21,29-23-24,0',
+                                     'ja3_hash': '0fda81cafa8adf0ee576786da9d6de10',
+                                     'source': 'primp',
+                                     'source_name': 'chrome_107',
+                                     'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X '
+                                                   '10_15_7) AppleWebKit/537.36 (KHTML, like '
+                                                   'Gecko) Chrome/107.0.0.0 Safari/537.36'},
+                   'chrome_108': {   'browser': 'chrome',
+                                     'h2_fingerprint': '1:65536;2:0;3:1000;4:6291456;6:262144|15663105|0|m,a,s,p',
+                                     'h2_fingerprint_hash': 'a345a694846ad9f6c97bcc3c75adbe26',
+                                     'ja3': '771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,65281-35-45-16-17513-18-13-11-43-23-5-0-51-10-27-21,29-23-24,0',
+                                     'ja3_hash': '6fd30c143a4ce07e73fbd7be8683631d',
+                                     'source': 'primp',
+                                     'source_name': 'chrome_108',
+                                     'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X '
+                                                   '10_15_7) AppleWebKit/537.36 (KHTML, like '
+                                                   'Gecko) Chrome/108.0.0.0 Safari/537.36'},
+                   'chrome_109': {   'browser': 'chrome',
+                                     'h2_fingerprint': '1:65536;2:0;3:1000;4:6291456;6:262144|15663105|0|m,a,s,p',
+                                     'h2_fingerprint_hash': 'a345a694846ad9f6c97bcc3c75adbe26',
+                                     'ja3': '771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,45-43-5-13-51-27-18-11-23-16-10-65281-0-35-17513-21,29-23-24,0',
+                                     'ja3_hash': '0e997777f46b6070817bfa3b81dcca61',
+                                     'source': 'primp',
+                                     'source_name': 'chrome_109',
+                                     'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X '
+                                                   '10_15_7) AppleWebKit/537.36 (KHTML, like '
+                                                   'Gecko) Chrome/109.0.0.0 Safari/537.36'},
+                   'chrome_114': {   'browser': 'chrome',
+                                     'h2_fingerprint': '1:65536;2:0;3:1000;4:6291456;6:262144|15663105|0|m,a,s,p',
+                                     'h2_fingerprint_hash': 'a345a694846ad9f6c97bcc3c75adbe26',
+                                     'ja3': '771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,17513-11-35-16-0-27-5-45-13-18-65281-10-51-23-43-21,29-23-24,0',
+                                     'ja3_hash': '17c4b9d598b4779169971718fe439820',
+                                     'source': 'primp',
+                                     'source_name': 'chrome_114',
+                                     'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X '
+                                                   '10_15_7) AppleWebKit/537.36 (KHTML, like '
+                                                   'Gecko) Chrome/114.0.0.0 Safari/537.36'},
+                   'chrome_116': {   'browser': 'chrome',
+                                     'h2_fingerprint': '1:65536;2:0;3:1000;4:6291456;6:262144|15663105|0|m,a,s,p',
+                                     'h2_fingerprint_hash': 'a345a694846ad9f6c97bcc3c75adbe26',
+                                     'ja3': '771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,16-23-45-51-0-65281-43-65037-35-11-18-5-13-27-17513-10,29-23-24,0',
+                                     'ja3_hash': '0fd1af79255131d44367e2ae1b344d37',
+                                     'source': 'primp',
+                                     'source_name': 'chrome_116',
+                                     'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X '
+                                                   '10_15_7) AppleWebKit/537.36 (KHTML, like '
+                                                   'Gecko) Chrome/116.0.0.0 Safari/537.36'},
+                   'chrome_117': {   'browser': 'chrome',
+                                     'h2_fingerprint': '1:65536;2:0;4:6291456;6:262144|15663105|0|m,a,s,p',
+                                     'h2_fingerprint_hash': '52d84b11737d980aef856699f885ca86',
+                                     'ja3': '771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,0-18-65037-11-5-51-17513-23-43-16-45-27-65281-13-10-35-21,29-23-24,0',
+                                     'ja3_hash': 'b60a132f2089319c70f84e0d04c2a747',
+                                     'source': 'primp',
+                                     'source_name': 'chrome_117',
+                                     'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X '
+                                                   '10_15_7) AppleWebKit/537.36 (KHTML, like '
+                                                   'Gecko) Chrome/117.0.0.0 Safari/537.36'},
+                   'chrome_118': {   'browser': 'chrome',
+                                     'h2_fingerprint': '1:65536;2:0;4:6291456;6:262144|15663105|0|m,a,s,p',
+                                     'h2_fingerprint_hash': '52d84b11737d980aef856699f885ca86',
+                                     'ja3': '771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,23-16-45-10-51-65281-11-0-5-43-17513-27-35-13-18-65037-21,29-23-24,0',
+                                     'ja3_hash': '4c8a108d97e11cccda32a0bfc473f5c6',
+                                     'source': 'primp',
+                                     'source_name': 'chrome_118',
+                                     'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X '
+                                                   '10_15_7) AppleWebKit/537.36 (KHTML, like '
+                                                   'Gecko) Chrome/118.0.0.0 Safari/537.36'},
+                   'chrome_119': {   'browser': 'chrome',
+                                     'h2_fingerprint': '1:65536;2:0;4:6291456;6:262144|15663105|0|m,a,s,p',
+                                     'h2_fingerprint_hash': '52d84b11737d980aef856699f885ca86',
+                                     'ja3': '771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,16-65037-17513-43-45-18-27-0-10-11-51-23-13-65281-35-5,29-23-24,0',
+                                     'ja3_hash': '92d8136c315c0f2c04d8f849ce8315ba',
+                                     'source': 'primp',
+                                     'source_name': 'chrome_119',
+                                     'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X '
+                                                   '10_15_7) AppleWebKit/537.36 (KHTML, like '
+                                                   'Gecko) Chrome/119.0.0.0 Safari/537.36'},
+                   'chrome_120': {   'browser': 'chrome',
+                                     'h2_fingerprint': '1:65536;2:0;4:6291456;6:262144|15663105|0|m,a,s,p',
+                                     'h2_fingerprint_hash': '52d84b11737d980aef856699f885ca86',
+                                     'ja3': '771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,51-65037-65281-27-13-17513-23-11-10-5-35-16-0-45-43-18,29-23-24,0',
+                                     'ja3_hash': '5de05a2e4aa8bf4ccd8325959f900049',
+                                     'source': 'primp',
+                                     'source_name': 'chrome_120',
+                                     'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X '
+                                                   '10_15_7) AppleWebKit/537.36 (KHTML, like '
+                                                   'Gecko) Chrome/120.0.0.0 Safari/537.36'},
+                   'chrome_123': {   'browser': 'chrome',
+                                     'h2_fingerprint': '1:65536;2:0;4:6291456;6:262144|15663105|0|m,a,s,p',
+                                     'h2_fingerprint_hash': '52d84b11737d980aef856699f885ca86',
+                                     'ja3': '771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,16-5-45-51-0-35-18-27-11-17513-13-43-65281-10-65037-23,29-23-24,0',
+                                     'ja3_hash': 'c1b4ee200030c07465fd7a6d8d910540',
+                                     'source': 'primp',
+                                     'source_name': 'chrome_123',
+                                     'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X '
+                                                   '10_15_7) AppleWebKit/537.36 (KHTML, like '
+                                                   'Gecko) Chrome/123.0.0.0 Safari/537.36'},
+                   'chrome_124': {   'browser': 'chrome',
+                                     'h2_fingerprint': '1:65536;2:0;4:6291456;6:262144|15663105|0|m,a,s,p',
+                                     'h2_fingerprint_hash': '52d84b11737d980aef856699f885ca86',
+                                     'ja3': '771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,11-51-65037-17513-16-5-45-65281-43-27-18-23-35-10-0-13,25497-29-23-24,0',
+                                     'ja3_hash': '400708e5acfe6bdd514a6e0b55ed2282',
+                                     'source': 'primp',
+                                     'source_name': 'chrome_124',
+                                     'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X '
+                                                   '10_15_7) AppleWebKit/537.36 (KHTML, like '
+                                                   'Gecko) Chrome/124.0.0.0 Safari/537.36'},
+                   'chrome_126': {   'browser': 'chrome',
+                                     'h2_fingerprint': '1:65536;2:0;4:6291456;6:262144|15663105|0|m,a,s,p',
+                                     'h2_fingerprint_hash': '52d84b11737d980aef856699f885ca86',
+                                     'ja3': '771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,35-10-23-11-65281-17513-45-5-13-16-18-27-0-43-51-65037,25497-29-23-24,0',
+                                     'ja3_hash': 'd0214e660088132cf92b2a7b78ec3a6b',
+                                     'source': 'primp',
+                                     'source_name': 'chrome_126',
+                                     'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X '
+                                                   '10_15_7) AppleWebKit/537.36 (KHTML, like '
+                                                   'Gecko) Chrome/126.0.0.0 Safari/537.36'},
+                   'chrome_127': {   'browser': 'chrome',
+                                     'h2_fingerprint': '1:65536;2:0;4:6291456;6:262144|15663105|0|m,a,s,p',
+                                     'h2_fingerprint_hash': '52d84b11737d980aef856699f885ca86',
+                                     'ja3': '771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,5-0-65281-43-35-27-51-10-45-13-23-65037-17513-16-18-11,25497-29-23-24,0',
+                                     'ja3_hash': '5113abce6d179c9c2b859bda3fad1fb1',
+                                     'source': 'primp',
+                                     'source_name': 'chrome_127',
+                                     'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X '
+                                                   '10_15_7) AppleWebKit/537.36 (KHTML, like '
+                                                   'Gecko) Chrome/127.0.0.0 Safari/537.36'},
+                   'chrome_128': {   'browser': 'chrome',
+                                     'h2_fingerprint': '1:65536;2:0;4:6291456;6:262144|15663105|0|m,a,s,p',
+                                     'h2_fingerprint_hash': '52d84b11737d980aef856699f885ca86',
+                                     'ja3': '771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,10-65281-11-5-16-27-0-23-51-45-18-17513-35-43-65037-13,25497-29-23-24,0',
+                                     'ja3_hash': '29ea8e04d752b743aa53570b62e4090d',
+                                     'source': 'primp',
+                                     'source_name': 'chrome_128',
+                                     'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X '
+                                                   '10_15_7) AppleWebKit/537.36 (KHTML, like '
+                                                   'Gecko) Chrome/128.0.0.0 Safari/537.36'},
+                   'chrome_129': {   'browser': 'chrome',
+                                     'h2_fingerprint': '1:65536;2:0;4:6291456;6:262144|15663105|0|m,a,s,p',
+                                     'h2_fingerprint_hash': '52d84b11737d980aef856699f885ca86',
+                                     'ja3': '771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,51-23-13-35-45-17513-18-43-27-65281-10-0-65037-16-11-5,25497-29-23-24,0',
+                                     'ja3_hash': 'a2cd97c5ff795090dbfd78405a91ee08',
+                                     'source': 'primp',
+                                     'source_name': 'chrome_129',
+                                     'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X '
+                                                   '10_15_7) AppleWebKit/537.36 (KHTML, like '
+                                                   'Gecko) Chrome/129.0.0.0 Safari/537.36'},
+                   'chrome_130': {   'browser': 'chrome',
+                                     'h2_fingerprint': '1:65536;2:0;4:6291456;6:262144|15663105|0|m,a,s,p',
+                                     'h2_fingerprint_hash': '52d84b11737d980aef856699f885ca86',
+                                     'ja3': '771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,23-65281-10-35-5-13-18-27-16-0-43-51-45-17513-11-65037,25497-29-23-24,0',
+                                     'ja3_hash': '8116f80b59995a6cfce657142a90e54b',
+                                     'source': 'primp',
+                                     'source_name': 'chrome_130',
+                                     'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X '
+                                                   '10_15_7) AppleWebKit/537.36 (KHTML, like '
+                                                   'Gecko) Chrome/130.0.0.0 Safari/537.36'},
+                   'chrome_131': {   'browser': 'chrome',
+                                     'h2_fingerprint': '1:65536;2:0;4:6291456;6:262144|15663105|0|m,a,s,p',
+                                     'h2_fingerprint_hash': '52d84b11737d980aef856699f885ca86',
+                                     'ja3': '771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,51-13-65281-18-23-11-10-65037-43-17513-5-16-35-45-0-27,4588-29-23-24,0',
+                                     'ja3_hash': '36f4197659a514faf70c1c86f7bb82ae',
+                                     'source': 'primp',
+                                     'source_name': 'chrome_131',
+                                     'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X '
+                                                   '10_15_7) AppleWebKit/537.36 (KHTML, like '
+                                                   'Gecko) Chrome/131.0.0.0 Safari/537.36'},
+                   'chrome_133': {   'browser': 'chrome',
+                                     'h2_fingerprint': '1:65536;2:0;4:6291456;6:262144|15663105|0|m,a,s,p',
+                                     'h2_fingerprint_hash': '52d84b11737d980aef856699f885ca86',
+                                     'ja3': '771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,45-18-16-23-43-11-65037-65281-10-27-17613-5-13-35-51-0,4588-29-23-24,0',
+                                     'ja3_hash': '01ed27aeb10e7a851b19c39e35b80196',
+                                     'source': 'primp',
+                                     'source_name': 'chrome_133',
+                                     'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X '
+                                                   '10_15_7) AppleWebKit/537.36 (KHTML, like '
+                                                   'Gecko) Chrome/133.0.0.0 Safari/537.36'},
+                   'edge101': {   'browser': 'edge',
+                                  'h2_fingerprint': '1:65536;3:1000;4:6291456;6:262144|15663105|0|m,a,s,p',
+                                  'h2_fingerprint_hash': '4f04edce68a7ecbe689edce7bf5f23f3',
+                                  'ja3': '771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,0-23-65281-10-11-35-16-5-13-18-51-45-43-27-17513-21,29-23-24,0',
+                                  'ja3_hash': 'cd08e31494f9531f560d64c695473da9',
+                                  'source': 'curl_cffi',
+                                  'source_name': 'edge101',
+                                  'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
+                                                'AppleWebKit/537.36 (KHTML, like Gecko) '
+                                                'Chrome/101.0.4951.64 Safari/537.36 '
+                                                'Edg/101.0.1210.47'},
+                   'edge122a': {   'browser': 'edge',
+                                   'h2_fingerprint': '1:65536;2:0;4:6291456;6:262144|15663105|0|m,a,s,p',
+                                   'h2_fingerprint_hash': '52d84b11737d980aef856699f885ca86',
+                                   'ja3': '771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,65281-45-51-5-35-27-11-17513-13-16-65037-10-18-43-0-23,29-23-24,0',
+                                   'ja3_hash': '61b9fc1d0bfa3b8b52576466dcdc2410',
+                                   'source': 'wreq',
+                                   'source_name': 'Edge122',
+                                   'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) '
+                                                 'AppleWebKit/537.36 (KHTML, like Gecko) '
+                                                 'Chrome/122.0.0.0 Safari/537.36 Edg/122.0.0.0'},
+                   'edge127a': {   'browser': 'edge',
+                                   'h2_fingerprint': '1:65536;2:0;4:6291456;6:262144|15663105|0|m,a,s,p',
+                                   'h2_fingerprint_hash': '52d84b11737d980aef856699f885ca86',
+                                   'ja3': '771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,35-0-23-43-5-10-13-51-18-45-16-65281-27-11-65037-17513,25497-29-23-24,0',
+                                   'ja3_hash': '98a1df4e6953ed147fa823b972a4b101',
+                                   'source': 'wreq',
+                                   'source_name': 'Edge127',
+                                   'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) '
+                                                 'AppleWebKit/537.36 (KHTML, like Gecko) '
+                                                 'Chrome/127.0.0.0 Safari/537.36 Edg/127.0.0.0'},
+                   'edge131a': {   'browser': 'edge',
+                                   'h2_fingerprint': '1:65536;2:0;4:6291456;6:262144|15663105|0|m,a,s,p',
+                                   'h2_fingerprint_hash': '52d84b11737d980aef856699f885ca86',
+                                   'ja3': '771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,5-17513-23-35-0-51-65281-10-18-13-45-43-65037-27-11-16,4588-29-23-24,0',
+                                   'ja3_hash': '457bcbc7e2c191f249d3bd91c0793f71',
+                                   'source': 'wreq',
+                                   'source_name': 'Edge131',
+                                   'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) '
+                                                 'AppleWebKit/537.36 (KHTML, like Gecko) '
+                                                 'Chrome/131.0.0.0 Safari/537.36 Edg/131.0.0.0'},
+                   'edge134': {   'browser': 'edge',
+                                  'h2_fingerprint': '1:65536;2:0;4:6291456;6:262144|15663105|0|m,a,s,p',
+                                  'h2_fingerprint_hash': '52d84b11737d980aef856699f885ca86',
+                                  'ja3': '771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,45-0-11-16-18-27-5-10-65281-35-23-17513-65037-51-43-13,4588-29-23-24,0',
+                                  'ja3_hash': 'eed554ca4e313477cedad106417253d5',
+                                  'source': 'wreq',
+                                  'source_name': 'Edge134',
+                                  'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) '
+                                                'AppleWebKit/537.36 (KHTML, like Gecko) '
+                                                'Chrome/134.0.0.0'},
+                   'edge135': {   'browser': 'edge',
+                                  'h2_fingerprint': '1:65536;2:0;4:6291456;6:262144|15663105|0|m,a,s,p',
+                                  'h2_fingerprint_hash': '52d84b11737d980aef856699f885ca86',
+                                  'ja3': '771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,35-5-13-51-17613-10-27-65037-45-43-65281-0-16-23-18-11,4588-29-23-24,0',
+                                  'ja3_hash': 'f57543f7fb1488ed2d6cc9b3dc47ba0c',
+                                  'source': 'wreq',
+                                  'source_name': 'Edge135',
+                                  'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) '
+                                                'AppleWebKit/537.36 (KHTML, like Gecko) '
+                                                'Chrome/135.0.0.0'},
+                   'edge136': {   'browser': 'edge',
+                                  'h2_fingerprint': '1:65536;2:0;4:6291456;6:262144|15663105|0|m,a,s,p',
+                                  'h2_fingerprint_hash': '52d84b11737d980aef856699f885ca86',
+                                  'ja3': '771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,5-18-65281-17613-0-65037-10-11-16-51-35-43-13-23-45-27,4588-29-23-24,0',
+                                  'ja3_hash': 'e8ed747ba9ce2fe9e7093ec8c3157ec7',
+                                  'source': 'wreq',
+                                  'source_name': 'Edge136',
+                                  'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) '
+                                                'AppleWebKit/537.36 (KHTML, like Gecko) '
+                                                'Chrome/136.0.0.0'},
+                   'edge137': {   'browser': 'edge',
+                                  'h2_fingerprint': '1:65536;2:0;4:6291456;6:262144|15663105|0|m,a,s,p',
+                                  'h2_fingerprint_hash': '52d84b11737d980aef856699f885ca86',
+                                  'ja3': '771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,27-35-18-10-43-0-51-16-65281-17613-23-5-11-13-65037-45,4588-29-23-24,0',
+                                  'ja3_hash': '8b78a3f0aba567cdb419efa053d0b2fb',
+                                  'source': 'wreq',
+                                  'source_name': 'Edge137',
+                                  'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) '
+                                                'AppleWebKit/537.36 (KHTML, like Gecko) '
+                                                'Chrome/137.0.0.0'},
+                   'edge138': {   'browser': 'edge',
+                                  'h2_fingerprint': '1:65536;2:0;4:6291456;6:262144|15663105|0|m,a,s,p',
+                                  'h2_fingerprint_hash': '52d84b11737d980aef856699f885ca86',
+                                  'ja3': '771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,5-17613-23-10-27-13-43-0-11-65037-65281-35-45-16-51-18,4588-29-23-24,0',
+                                  'ja3_hash': '478ccdc02013af64e6c3600b288d5ec7',
+                                  'source': 'wreq',
+                                  'source_name': 'Edge138',
+                                  'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) '
+                                                'AppleWebKit/537.36 (KHTML, like Gecko) '
+                                                'Chrome/138.0.0.0'},
+                   'edge139': {   'browser': 'edge',
+                                  'h2_fingerprint': '1:65536;2:0;4:6291456;6:262144|15663105|0|m,a,s,p',
+                                  'h2_fingerprint_hash': '52d84b11737d980aef856699f885ca86',
+                                  'ja3': '771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,23-27-5-16-51-18-45-13-11-43-17613-65037-10-65281-35-0,4588-29-23-24,0',
+                                  'ja3_hash': '6157c8cd18db8f540401a72ab342661f',
+                                  'source': 'wreq',
+                                  'source_name': 'Edge139',
+                                  'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) '
+                                                'AppleWebKit/537.36 (KHTML, like Gecko) '
+                                                'Chrome/139.0.0.0'},
+                   'edge140': {   'browser': 'edge',
+                                  'h2_fingerprint': '1:65536;2:0;4:6291456;6:262144|15663105|0|m,a,s,p',
+                                  'h2_fingerprint_hash': '52d84b11737d980aef856699f885ca86',
+                                  'ja3': '771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,65281-18-13-45-65037-17613-11-23-35-0-51-43-16-5-10-27,4588-29-23-24,0',
+                                  'ja3_hash': 'a28a0ef4645905e34b9bfd336bb1d722',
+                                  'source': 'wreq',
+                                  'source_name': 'Edge140',
+                                  'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) '
+                                                'AppleWebKit/537.36 (KHTML, like Gecko) '
+                                                'Chrome/140.0.0.0'},
+                   'edge141': {   'browser': 'edge',
+                                  'h2_fingerprint': '1:65536;2:0;4:6291456;6:262144|15663105|0|m,a,s,p',
+                                  'h2_fingerprint_hash': '52d84b11737d980aef856699f885ca86',
+                                  'ja3': '771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,13-65281-43-17613-65037-18-27-23-51-11-0-45-16-5-35-10,4588-29-23-24,0',
+                                  'ja3_hash': '973d0e7bd07fb9e32e82766be318bef4',
+                                  'source': 'wreq',
+                                  'source_name': 'Edge141',
+                                  'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) '
+                                                'AppleWebKit/537.36 (KHTML, like Gecko) '
+                                                'Chrome/141.0.0.0'},
+                   'edge142': {   'browser': 'edge',
+                                  'h2_fingerprint': '1:65536;2:0;4:6291456;6:262144|15663105|0|m,a,s,p',
+                                  'h2_fingerprint_hash': '52d84b11737d980aef856699f885ca86',
+                                  'ja3': '771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,17613-0-16-51-18-11-27-45-10-35-65037-5-13-65281-23-43,4588-29-23-24,0',
+                                  'ja3_hash': '304827e929bc1fc2f8e966246dc62ea8',
+                                  'source': 'wreq',
+                                  'source_name': 'Edge142',
+                                  'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) '
+                                                'AppleWebKit/537.36 (KHTML, like Gecko) '
+                                                'Chrome/142.0.0.0 Safari/537.36 Edg/142.0.0.0'},
+                   'edge143': {   'browser': 'edge',
+                                  'h2_fingerprint': '1:65536;2:0;4:6291456;6:262144|15663105|0|m,a,s,p',
+                                  'h2_fingerprint_hash': '52d84b11737d980aef856699f885ca86',
+                                  'ja3': '771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,10-17613-18-5-65037-51-45-11-13-27-0-23-43-35-65281-16,4588-29-23-24,0',
+                                  'ja3_hash': 'ac08946693b8ac0926a0965a8e1313a6',
+                                  'source': 'wreq',
+                                  'source_name': 'Edge143',
+                                  'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) '
+                                                'AppleWebKit/537.36 (KHTML, like Gecko) '
+                                                'Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0'},
+                   'edge144': {   'browser': 'edge',
+                                  'h2_fingerprint': '1:65536;2:0;4:6291456;6:262144|15663105|0|m,a,s,p',
+                                  'h2_fingerprint_hash': '52d84b11737d980aef856699f885ca86',
+                                  'ja3': '771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,65037-5-35-17613-65281-51-18-16-23-45-11-10-27-0-13-43,4588-29-23-24,0',
+                                  'ja3_hash': '4237569ca975f3a95b619a060dd3a8de',
+                                  'source': 'wreq',
+                                  'source_name': 'Edge144',
+                                  'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) '
+                                                'AppleWebKit/537.36 (KHTML, like Gecko) '
+                                                'Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0'},
+                   'edge145': {   'browser': 'edge',
+                                  'h2_fingerprint': '1:65536;2:0;4:6291456;6:262144|15663105|0|m,a,s,p',
+                                  'h2_fingerprint_hash': '52d84b11737d980aef856699f885ca86',
+                                  'ja3': '771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,16-5-0-18-13-27-17613-51-35-65281-10-23-43-65037-11-45,4588-29-23-24,0',
+                                  'ja3_hash': '7fc88edd5bf5769c25259656dbed199e',
+                                  'source': 'wreq',
+                                  'source_name': 'Edge145',
+                                  'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) '
+                                                'AppleWebKit/537.36 (KHTML, like Gecko) '
+                                                'Chrome/145.0.0.0 Safari/537.36 Edg/145.0.0.0'},
+                   'edge146': {   'browser': 'edge',
+                                  'h2_fingerprint': '1:65536;2:0;4:6291456;6:262144|15663105|0|m,a,s,p',
+                                  'h2_fingerprint_hash': '52d84b11737d980aef856699f885ca86',
+                                  'ja3': '771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,23-18-51-45-17613-35-10-5-13-11-0-27-16-65037-43-65281,4588-29-23-24,0',
+                                  'ja3_hash': '2a67e7579098460b59cbe6a29e92e15d',
+                                  'source': 'wreq',
+                                  'source_name': 'Edge146',
+                                  'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) '
+                                                'AppleWebKit/537.36 (KHTML, like Gecko) '
+                                                'Chrome/146.0.0.0 Safari/537.36 '
+                                                'Edg/146.0.3856.109'},
+                   'edge147': {   'browser': 'edge',
+                                  'h2_fingerprint': '1:65536;2:0;4:6291456;6:262144|15663105|0|m,a,s,p',
+                                  'h2_fingerprint_hash': '52d84b11737d980aef856699f885ca86',
+                                  'ja3': '771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,23-0-27-51-45-17613-11-65037-5-13-16-18-65281-43-10-35,4588-29-23-24,0',
+                                  'ja3_hash': 'ea0ab3de79f50053955f88c219cfec2d',
+                                  'source': 'wreq',
+                                  'source_name': 'Edge147',
+                                  'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) '
+                                                'AppleWebKit/537.36 (KHTML, like Gecko) '
+                                                'Chrome/147.0.0.0 Safari/537.36 Edg/147.0.3912.51'},
+                   'edge99': {   'browser': 'edge',
+                                 'h2_fingerprint': '1:65536;3:1000;4:6291456;6:262144|15663105|0|m,a,s,p',
+                                 'h2_fingerprint_hash': '4f04edce68a7ecbe689edce7bf5f23f3',
+                                 'ja3': '771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,0-23-65281-10-11-35-16-5-13-18-51-45-43-27-17513-21,29-23-24,0',
+                                 'ja3_hash': 'cd08e31494f9531f560d64c695473da9',
+                                 'source': 'curl_cffi',
+                                 'source_name': 'edge99',
+                                 'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
+                                               'AppleWebKit/537.36 (KHTML, like Gecko) '
+                                               'Chrome/99.0.4844.51 Safari/537.36 '
+                                               'Edg/99.0.1150.30'},
+                   'edge_101': {   'browser': 'edge',
+                                   'h2_fingerprint': '1:65536;3:1000;4:6291456;6:262144|15663105|0|m,a,s,p',
+                                   'h2_fingerprint_hash': '4f04edce68a7ecbe689edce7bf5f23f3',
+                                   'ja3': '771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,0-23-65281-10-11-35-16-5-13-18-51-45-43-27-17513-21,29-23-24,0',
+                                   'ja3_hash': 'cd08e31494f9531f560d64c695473da9',
+                                   'source': 'primp',
+                                   'source_name': 'edge_101',
+                                   'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) '
+                                                 'AppleWebKit/537.36 (KHTML, like Gecko) '
+                                                 'Chrome/101.0.4951.64 Safari/537.36 '
+                                                 'Edg/101.0.1210.47'},
+                   'edge_122': {   'browser': 'edge',
+                                   'h2_fingerprint': '1:65536;2:0;4:6291456;6:262144|15663105|0|m,a,s,p',
+                                   'h2_fingerprint_hash': '52d84b11737d980aef856699f885ca86',
+                                   'ja3': '771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,35-18-11-27-65281-0-23-16-5-10-45-65037-51-43-17513-13,29-23-24,0',
+                                   'ja3_hash': '58905d24eae204b26e52b81a751ac089',
+                                   'source': 'primp',
+                                   'source_name': 'edge_122',
+                                   'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) '
+                                                 'AppleWebKit/537.36 (KHTML, like Gecko) '
+                                                 'Chrome/122.0.0.0 Safari/537.36 Edg/122.0.0.0'},
+                   'edge_127': {   'browser': 'edge',
+                                   'h2_fingerprint': '1:65536;2:0;4:6291456;6:262144|15663105|0|m,a,s,p',
+                                   'h2_fingerprint_hash': '52d84b11737d980aef856699f885ca86',
+                                   'ja3': '771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,17513-43-51-5-45-18-23-13-65281-10-35-16-0-11-65037-27,25497-29-23-24,0',
+                                   'ja3_hash': '0c82d781acc8d53d26e37a899c96cdeb',
+                                   'source': 'primp',
+                                   'source_name': 'edge_127',
+                                   'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) '
+                                                 'AppleWebKit/537.36 (KHTML, like Gecko) '
+                                                 'Chrome/127.0.0.0 Safari/537.36 Edg/127.0.0.0'},
+                   'edge_131': {   'browser': 'edge',
+                                   'h2_fingerprint': '1:65536;2:0;4:6291456;6:262144|15663105|0|m,a,s,p',
+                                   'h2_fingerprint_hash': '52d84b11737d980aef856699f885ca86',
+                                   'ja3': '771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,0-43-45-65037-18-13-11-65281-17513-27-23-10-51-35-5-16,4588-29-23-24,0',
+                                   'ja3_hash': 'c66b639e4413ff32736f820fcdd692c3',
+                                   'source': 'primp',
+                                   'source_name': 'edge_131',
+                                   'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) '
+                                                 'AppleWebKit/537.36 (KHTML, like Gecko) '
+                                                 'Chrome/131.0.0.0 Safari/537.36 Edg/131.0.0.0'},
+                   'firefox133': {   'browser': 'firefox',
+                                     'h2_fingerprint': '1:65536;2:0;4:131072;5:16384|12517377|0|m,p,a,s',
+                                     'h2_fingerprint_hash': '6ea73faa8fc5aac76bded7bd238f6433',
+                                     'ja3': '771,4865-4867-4866-49195-49199-52393-52392-49196-49200-49162-49161-49171-49172-156-157-47-53,0-23-65281-10-11-35-16-5-34-51-43-13-45-28-27-65037,4588-29-23-24-25-256-257,0',
+                                     'ja3_hash': '2d692a4485ca2f5f2b10ecb2d2909ad3',
+                                     'source': 'curl_cffi',
+                                     'source_name': 'firefox133',
+                                     'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; '
+                                                   'rv:133.0) Gecko/20100101 Firefox/133.0'},
+                   'firefox135': {   'browser': 'firefox',
+                                     'h2_fingerprint': '1:65536;2:0;4:131072;5:16384|12517377|0|m,p,a,s',
+                                     'h2_fingerprint_hash': '6ea73faa8fc5aac76bded7bd238f6433',
+                                     'ja3': '771,4865-4867-4866-49195-49199-52393-52392-49196-49200-49162-49161-49171-49172-156-157-47-53,0-23-65281-10-11-35-16-5-34-18-51-43-13-45-28-27-65037,4588-29-23-24-25-256-257,0',
+                                     'ja3_hash': '6f7889b9fb1a62a9577e685c1fcfa919',
+                                     'source': 'curl_cffi',
+                                     'source_name': 'firefox135',
+                                     'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; '
+                                                   'rv:135.0) Gecko/20100101 Firefox/135.0'},
+                   'firefox136': {   'browser': 'firefox',
+                                     'h2_fingerprint': '1:65536;2:0;4:131072;5:16384|12517377|0|m,p,a,s',
+                                     'h2_fingerprint_hash': '6ea73faa8fc5aac76bded7bd238f6433',
+                                     'ja3': '771,4865-4867-4866-49195-49199-52393-52392-49196-49200-49162-49161-49171-49172-156-157-47-53,0-23-65281-10-11-35-16-5-34-18-51-43-13-45-28-27-65037,4588-29-23-24-25-256-257,0',
+                                     'ja3_hash': '6f7889b9fb1a62a9577e685c1fcfa919',
+                                     'source': 'wreq',
+                                     'source_name': 'Firefox136',
+                                     'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; '
+                                                   'rv:136.0) Gecko/20100101 Firefox/136.0'},
+                   'firefox139': {   'browser': 'firefox',
+                                     'h2_fingerprint': '1:65536;2:0;4:131072;5:16384|12517377|0|m,p,a,s',
+                                     'h2_fingerprint_hash': '6ea73faa8fc5aac76bded7bd238f6433',
+                                     'ja3': '771,4865-4867-4866-49195-49199-52393-52392-49196-49200-49162-49161-49171-49172-156-157-47-53,0-23-65281-10-11-35-16-5-34-18-51-43-13-45-28-27-65037,4588-29-23-24-25-256-257,0',
+                                     'ja3_hash': '6f7889b9fb1a62a9577e685c1fcfa919',
+                                     'source': 'wreq',
+                                     'source_name': 'Firefox139',
+                                     'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; '
+                                                   'rv:139.0) Gecko/20100101 Firefox/139.0'},
+                   'firefox142': {   'browser': 'firefox',
+                                     'h2_fingerprint': '1:65536;2:0;4:131072;5:16384|12517377|0|m,p,a,s',
+                                     'h2_fingerprint_hash': '6ea73faa8fc5aac76bded7bd238f6433',
+                                     'ja3': '771,4865-4867-4866-49195-49199-52393-52392-49196-49200-49162-49161-49171-49172-156-157-47-53,0-23-65281-10-11-35-16-5-34-18-51-43-13-45-28-27-65037,4588-29-23-24-25-256-257,0',
+                                     'ja3_hash': '6f7889b9fb1a62a9577e685c1fcfa919',
+                                     'source': 'wreq',
+                                     'source_name': 'Firefox142',
+                                     'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; '
+                                                   'rv:142.0) Gecko/20100101 Firefox/142.0'},
+                   'firefox143': {   'browser': 'firefox',
+                                     'h2_fingerprint': '1:65536;2:0;4:131072;5:16384|12517377|0|m,p,a,s',
+                                     'h2_fingerprint_hash': '6ea73faa8fc5aac76bded7bd238f6433',
+                                     'ja3': '771,4865-4867-4866-49195-49199-52393-52392-49196-49200-49162-49161-49171-49172-156-157-47-53,0-23-65281-10-11-35-16-5-34-18-51-43-13-45-28-27-65037,4588-29-23-24-25-256-257,0',
+                                     'ja3_hash': '6f7889b9fb1a62a9577e685c1fcfa919',
+                                     'source': 'wreq',
+                                     'source_name': 'Firefox143',
+                                     'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; '
+                                                   'rv:143.0) Gecko/20100101 Firefox/143.0'},
+                   'firefox144': {   'browser': 'firefox',
+                                     'h2_fingerprint': '1:65536;2:0;4:131072;5:16384|12517377|0|m,p,a,s',
+                                     'h2_fingerprint_hash': '6ea73faa8fc5aac76bded7bd238f6433',
+                                     'ja3': '771,4865-4867-4866-49195-49199-52393-52392-49196-49200-49162-49161-49171-49172-156-157-47-53,0-23-65281-10-11-35-16-5-34-18-51-43-13-45-28-27-65037,4588-29-23-24-25-256-257,0',
+                                     'ja3_hash': '6f7889b9fb1a62a9577e685c1fcfa919',
+                                     'source': 'curl_cffi',
+                                     'source_name': 'firefox144',
+                                     'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; '
+                                                   'rv:144.0) Gecko/20100101 Firefox/144.0'},
+                   'firefox145': {   'browser': 'firefox',
+                                     'h2_fingerprint': '1:65536;2:0;4:131072;5:16384|12517377|0|m,p,a,s',
+                                     'h2_fingerprint_hash': '6ea73faa8fc5aac76bded7bd238f6433',
+                                     'ja3': '771,4865-4867-4866-49195-49199-52393-52392-49196-49200-49162-49161-49171-49172-156-157-47-53,0-23-65281-10-11-35-16-5-34-18-51-43-13-45-28-27-65037,4588-29-23-24-25-256-257,0',
+                                     'ja3_hash': '6f7889b9fb1a62a9577e685c1fcfa919',
+                                     'source': 'wreq',
+                                     'source_name': 'Firefox145',
+                                     'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; '
+                                                   'rv:145.0) Gecko/20100101 Firefox/145.0'},
+                   'firefox146': {   'browser': 'firefox',
+                                     'h2_fingerprint': '1:65536;2:0;4:131072;5:16384|12517377|0|m,p,a,s',
+                                     'h2_fingerprint_hash': '6ea73faa8fc5aac76bded7bd238f6433',
+                                     'ja3': '771,4865-4867-4866-49195-49199-52393-52392-49196-49200-49162-49161-49171-49172-156-157-47-53,0-23-65281-10-11-35-16-5-34-18-51-43-13-45-28-27-65037,4588-29-23-24-25-256-257,0',
+                                     'ja3_hash': '6f7889b9fb1a62a9577e685c1fcfa919',
+                                     'source': 'wreq',
+                                     'source_name': 'Firefox146',
+                                     'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; '
+                                                   'rv:146.0) Gecko/20100101 Firefox/146.0'},
+                   'firefox147': {   'browser': 'firefox',
+                                     'h2_fingerprint': '1:65536;2:0;4:131072;5:16384|12517377|0|m,p,a,s',
+                                     'h2_fingerprint_hash': '6ea73faa8fc5aac76bded7bd238f6433',
+                                     'ja3': '771,4865-4867-4866-49195-49199-52393-52392-49196-49200-49162-49161-49171-49172-156-157-47-53,0-23-65281-10-11-35-16-5-34-18-51-43-13-45-28-27-65037,4588-29-23-24-25-256-257,0',
+                                     'ja3_hash': '6f7889b9fb1a62a9577e685c1fcfa919',
+                                     'source': 'curl_cffi',
+                                     'source_name': 'firefox147',
+                                     'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; '
+                                                   'rv:147.0) Gecko/20100101 Firefox/147.0'},
+                   'firefox148': {   'browser': 'firefox',
+                                     'h2_fingerprint': '1:65536;2:0;4:131072;5:16384|12517377|0|m,p,a,s',
+                                     'h2_fingerprint_hash': '6ea73faa8fc5aac76bded7bd238f6433',
+                                     'ja3': '771,4865-4867-4866-49195-49199-52393-52392-49196-49200-49162-49161-49171-49172-156-157-47-53,0-23-65281-10-11-35-16-5-34-18-51-43-13-45-28-27-65037,4588-29-23-24-25-256-257,0',
+                                     'ja3_hash': '6f7889b9fb1a62a9577e685c1fcfa919',
+                                     'source': 'wreq',
+                                     'source_name': 'Firefox148',
+                                     'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; '
+                                                   'rv:148.0) Gecko/20100101 Firefox/148.0'},
+                   'firefox149': {   'browser': 'firefox',
+                                     'h2_fingerprint': '1:65536;2:0;4:131072;5:16384|12517377|0|m,p,a,s',
+                                     'h2_fingerprint_hash': '6ea73faa8fc5aac76bded7bd238f6433',
+                                     'ja3': '771,4865-4867-4866-49195-49199-52393-52392-49196-49200-49162-49161-49171-49172-156-157-47-53,0-23-65281-10-11-35-16-5-34-18-51-43-13-45-28-27-65037,4588-29-23-24-25-256-257,0',
+                                     'ja3_hash': '6f7889b9fb1a62a9577e685c1fcfa919',
+                                     'source': 'wreq',
+                                     'source_name': 'Firefox149',
+                                     'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; '
+                                                   'rv:149.0) Gecko/20100101 Firefox/149.0'},
+                   'firefox151': {   'browser': 'firefox',
+                                     'h2_fingerprint': '1:65536;2:0;4:131072;5:16384|12517377|0|m,p,a,s',
+                                     'h2_fingerprint_hash': '6ea73faa8fc5aac76bded7bd238f6433',
+                                     'ja3': '771,4865-4867-4866-49195-49199-52393-52392-49196-49200-49162-49171-49172-156-157-47-53,0-23-65281-10-11-16-5-34-18-51-43-13-45-28-27-65037,4588-29-23-24-25-256-257,0',
+                                     'ja3_hash': '8acff3e590a96b13277b940a3aa0e9a9',
+                                     'source': 'manual',
+                                     'source_name': 'firefox151',
+                                     'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; '
+                                                   'rv:151.0) Gecko/20100101 Firefox/151.0'},
+                   'firefox_109': {   'browser': 'firefox',
+                                      'h2_fingerprint': '1:65536;4:131072;5:16384|12517377|3:0:0:201,5:0:0:101,7:0:0:1,9:0:7:1,11:0:3:1,13:0:0:241|m,p,a,s',
+                                      'h2_fingerprint_hash': '3d9132023bf26a71d40fe766e5c24c9d',
+                                      'ja3': '771,4865-4867-4866-49195-49199-52393-52392-49196-49200-49162-49161-49171-49172-156-157-47-53,0-23-65281-10-11-35-16-5-34-51-43-13-45-28-21,29-23-24-25-256-257,0',
+                                      'ja3_hash': '579ccef312d18482fc42e2b822ca2430',
+                                      'source': 'primp',
+                                      'source_name': 'firefox_109',
+                                      'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_17; '
+                                                    'rv:109.0) Gecko/20000101 Firefox/109.0'},
+                   'firefox_117': {   'browser': 'firefox',
+                                      'h2_fingerprint': '1:65536;4:131072;5:16384|12517377|3:0:0:201,5:0:0:101,7:0:0:1,9:0:7:1,11:0:3:1,13:0:0:241|m,p,a,s',
+                                      'h2_fingerprint_hash': '3d9132023bf26a71d40fe766e5c24c9d',
+                                      'ja3': '771,4865-4867-4866-49195-49199-52393-52392-49196-49200-49162-49161-49171-49172-156-157-47-53,0-23-65281-10-11-35-16-5-34-51-43-13-45-28-21,29-23-24-25-256-257,0',
+                                      'ja3_hash': '579ccef312d18482fc42e2b822ca2430',
+                                      'source': 'primp',
+                                      'source_name': 'firefox_117',
+                                      'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X '
+                                                    '11_16_1; rv:117.0) Gecko/20010101 '
+                                                    'Firefox/117.0'},
+                   'firefox_128': {   'browser': 'firefox',
+                                      'h2_fingerprint': '1:65536;2:0;3:0;4:131072;5:16384|12517377|0|m,p,a,s',
+                                      'h2_fingerprint_hash': '1d8a6f51fd7253d04674593073fc18b0',
+                                      'ja3': '771,4865-4867-4866-49195-49199-52393-52392-49196-49200-49171-49172-156-157-47-53,0-23-65281-10-11-16-5-34-51-43-13-28-65037,29-23-24-25-256-257,0',
+                                      'ja3_hash': '0faf2a91198d40dbd58b9308f3fca2fd',
+                                      'source': 'primp',
+                                      'source_name': 'firefox_128',
+                                      'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; '
+                                                    'rv:128.0) Gecko/20100101 Firefox/128.0'},
+                   'firefoxandroid135': {   'browser': 'firefox',
+                                            'h2_fingerprint': '1:4096;2:0;4:32768;5:16384|12517377|0|m,p,a,s',
+                                            'h2_fingerprint_hash': '41a06cadb1c6385e6d08c8d0dbbea818',
+                                            'ja3': '771,4865-4867-4866-49195-49199-52393-52392-49196-49200-49162-49161-49171-49172-156-157-47-53,0-23-65281-10-11-35-16-5-34-51-43-13-45-28-27-65037,29-23-24-25-256-257,0',
+                                            'ja3_hash': '8bc88bfe0bd40b49be5cae8597feb9a2',
+                                            'source': 'wreq',
+                                            'source_name': 'FirefoxAndroid135',
+                                            'user_agent': 'Mozilla/5.0 (Android 13; Mobile; '
+                                                          'rv:135.0) Gecko/135.0 Firefox/135.0'},
+                   'firefoxprivate135': {   'browser': 'firefox',
+                                            'h2_fingerprint': '1:65536;2:0;4:131072;5:16384|12517377|0|m,p,a,s',
+                                            'h2_fingerprint_hash': '6ea73faa8fc5aac76bded7bd238f6433',
+                                            'ja3': '771,4865-4867-4866-49195-49199-52393-52392-49196-49200-49162-49161-49171-49172-156-157-47-53,0-23-65281-10-11-16-5-34-18-51-43-13-28-27-65037,4588-29-23-24-25-256-257,0',
+                                            'ja3_hash': '7704a11cf87dfcf33080b90ce11d5527',
+                                            'source': 'wreq',
+                                            'source_name': 'FirefoxPrivate135',
+                                            'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X '
+                                                          '10.15; rv:135.0) Gecko/20100101 '
+                                                          'Firefox/135.0'},
+                   'firefoxprivate136': {   'browser': 'firefox',
+                                            'h2_fingerprint': '1:65536;2:0;4:131072;5:16384|12517377|0|m,p,a,s',
+                                            'h2_fingerprint_hash': '6ea73faa8fc5aac76bded7bd238f6433',
+                                            'ja3': '771,4865-4867-4866-49195-49199-52393-52392-49196-49200-49162-49161-49171-49172-156-157-47-53,0-23-65281-10-11-16-5-34-18-51-43-13-28-27-65037,4588-29-23-24-25-256-257,0',
+                                            'ja3_hash': '7704a11cf87dfcf33080b90ce11d5527',
+                                            'source': 'wreq',
+                                            'source_name': 'FirefoxPrivate136',
+                                            'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X '
+                                                          '10.15; rv:136.0) Gecko/20100101 '
+                                                          'Firefox/136.0'},
+                   'opera116': {   'browser': 'opera',
+                                   'h2_fingerprint': '1:65536;2:0;4:6291456;6:262144|15663105|0|m,a,s,p',
+                                   'h2_fingerprint_hash': '52d84b11737d980aef856699f885ca86',
+                                   'ja3': '771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,51-5-18-65281-35-23-10-13-45-27-17513-65037-16-11-0-43,4588-29-23-24,0',
+                                   'ja3_hash': 'c65000ed0e5c380d330560aa114a214b',
+                                   'source': 'wreq',
+                                   'source_name': 'Opera116',
+                                   'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) '
+                                                 'AppleWebKit/537.36 (KHTML, like Gecko) '
+                                                 'Chrome/131.0.0.0 Safari/537.36 OPR/116.0.0.0'},
+                   'opera117': {   'browser': 'opera',
+                                   'h2_fingerprint': '1:65536;2:0;4:6291456;6:262144|15663105|0|m,a,s,p',
+                                   'h2_fingerprint_hash': '52d84b11737d980aef856699f885ca86',
+                                   'ja3': '771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,18-10-17513-65281-5-23-0-35-27-51-13-45-43-11-65037-16,4588-29-23-24,0',
+                                   'ja3_hash': 'dba6c6c86d7d8be14bfc9c5e80bc0732',
+                                   'source': 'wreq',
+                                   'source_name': 'Opera117',
+                                   'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) '
+                                                 'AppleWebKit/537.36 (KHTML, like Gecko) '
+                                                 'Chrome/132.0.0.0 Safari/537.36 OPR/117.0.0.0'},
+                   'opera118': {   'browser': 'opera',
+                                   'h2_fingerprint': '1:65536;2:0;4:6291456;6:262144|15663105|0|m,a,s,p',
+                                   'h2_fingerprint_hash': '52d84b11737d980aef856699f885ca86',
+                                   'ja3': '771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,11-5-43-23-45-16-10-51-18-17513-27-0-13-65281-35-65037,4588-29-23-24,0',
+                                   'ja3_hash': '230f2e3e17656dfbdf60aa96efbce850',
+                                   'source': 'wreq',
+                                   'source_name': 'Opera118',
+                                   'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) '
+                                                 'AppleWebKit/537.36 (KHTML, like Gecko) '
+                                                 'Chrome/133.0.0.0 Safari/537.36 OPR/118.0.0.0'},
+                   'opera119': {   'browser': 'opera',
+                                   'h2_fingerprint': '1:65536;2:0;4:6291456;6:262144|15663105|0|m,a,s,p',
+                                   'h2_fingerprint_hash': '52d84b11737d980aef856699f885ca86',
+                                   'ja3': '771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,65037-10-16-23-51-13-18-5-17513-27-45-65281-0-35-43-11,4588-29-23-24,0',
+                                   'ja3_hash': '4de0ede3fb8c52055c7d4cb3c6194466',
+                                   'source': 'wreq',
+                                   'source_name': 'Opera119',
+                                   'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) '
+                                                 'AppleWebKit/537.36 (KHTML, like Gecko) '
+                                                 'Chrome/134.0.0.0 Safari/537.36 OPR/119.0.0.0'},
+                   'opera120': {   'browser': 'opera',
+                                   'h2_fingerprint': '1:65536;2:0;4:6291456;6:262144|15663105|0|m,a,s,p',
+                                   'h2_fingerprint_hash': '52d84b11737d980aef856699f885ca86',
+                                   'ja3': '771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,17513-5-65037-65281-13-27-43-10-11-51-35-0-18-23-16-45,4588-29-23-24,0',
+                                   'ja3_hash': 'e8755d0d3bae745e8dca9a206a5edea5',
+                                   'source': 'wreq',
+                                   'source_name': 'Opera120',
+                                   'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) '
+                                                 'AppleWebKit/537.36 (KHTML, like Gecko) '
+                                                 'Chrome/135.0.0.0 Safari/537.36 OPR/120.0.0.0'},
+                   'opera121': {   'browser': 'opera',
+                                   'h2_fingerprint': '1:65536;2:0;4:6291456;6:262144|15663105|0|m,a,s,p',
+                                   'h2_fingerprint_hash': '52d84b11737d980aef856699f885ca86',
+                                   'ja3': '771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,0-11-16-23-45-13-27-43-35-51-65037-17513-18-10-5-65281,4588-29-23-24,0',
+                                   'ja3_hash': 'bf0973af4638401488156b271c64014c',
+                                   'source': 'wreq',
+                                   'source_name': 'Opera121',
+                                   'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) '
+                                                 'AppleWebKit/537.36 (KHTML, like Gecko) '
+                                                 'Chrome/137.0.0.0 Safari/537.36 OPR/121.0.0.0'},
+                   'opera122': {   'browser': 'opera',
+                                   'h2_fingerprint': '1:65536;2:0;4:6291456;6:262144|15663105|0|m,a,s,p',
+                                   'h2_fingerprint_hash': '52d84b11737d980aef856699f885ca86',
+                                   'ja3': '771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,5-43-65037-11-65281-17513-13-16-45-10-0-27-35-18-51-23,4588-29-23-24,0',
+                                   'ja3_hash': '029aa2dccc2ef4bfc326179451dd7f3a',
+                                   'source': 'wreq',
+                                   'source_name': 'Opera122',
+                                   'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) '
+                                                 'AppleWebKit/537.36 (KHTML, like Gecko) '
+                                                 'Chrome/138.0.0.0 Safari/537.36 OPR/122.0.0.0'},
+                   'opera123': {   'browser': 'opera',
+                                   'h2_fingerprint': '1:65536;2:0;4:6291456;6:262144|15663105|0|m,a,s,p',
+                                   'h2_fingerprint_hash': '52d84b11737d980aef856699f885ca86',
+                                   'ja3': '771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,0-27-65037-18-16-10-11-13-5-35-65281-45-51-17513-43-23,4588-29-23-24,0',
+                                   'ja3_hash': 'ed023b42f2b0406eee23d7ede255ae7a',
+                                   'source': 'wreq',
+                                   'source_name': 'Opera123',
+                                   'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) '
+                                                 'AppleWebKit/537.36 (KHTML, like Gecko) '
+                                                 'Chrome/139.0.0.0 Safari/537.36 OPR/123.0.0.0'},
+                   'opera124': {   'browser': 'opera',
+                                   'h2_fingerprint': '1:65536;2:0;4:6291456;6:262144|15663105|0|m,a,s,p',
+                                   'h2_fingerprint_hash': '52d84b11737d980aef856699f885ca86',
+                                   'ja3': '771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,65037-0-16-11-23-17513-35-51-5-43-10-45-27-13-65281-18,4588-29-23-24,0',
+                                   'ja3_hash': '29f808be948b55f2a2cf4d6aab8fe20c',
+                                   'source': 'wreq',
+                                   'source_name': 'Opera124',
+                                   'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) '
+                                                 'AppleWebKit/537.36 (KHTML, like Gecko) '
+                                                 'Chrome/140.0.0.0 Safari/537.36 OPR/124.0.0.0'},
+                   'opera125': {   'browser': 'opera',
+                                   'h2_fingerprint': '1:65536;2:0;4:6291456;6:262144|15663105|0|m,a,s,p',
+                                   'h2_fingerprint_hash': '52d84b11737d980aef856699f885ca86',
+                                   'ja3': '771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,11-65037-45-35-18-51-16-5-13-23-43-10-65281-0-27-17513,4588-29-23-24,0',
+                                   'ja3_hash': 'b2273777c3cb81ae4ecba9736d36042a',
+                                   'source': 'wreq',
+                                   'source_name': 'Opera125',
+                                   'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) '
+                                                 'AppleWebKit/537.36 (KHTML, like Gecko) '
+                                                 'Chrome/141.0.0.0 Safari/537.36 OPR/125.0.0.0'},
+                   'opera126': {   'browser': 'opera',
+                                   'h2_fingerprint': '1:65536;2:0;4:6291456;6:262144|15663105|0|m,a,s,p',
+                                   'h2_fingerprint_hash': '52d84b11737d980aef856699f885ca86',
+                                   'ja3': '771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,35-17513-5-65037-51-10-43-18-13-16-45-65281-0-27-23-11,4588-29-23-24,0',
+                                   'ja3_hash': 'ba4216f27a144ca5588a0dfccc530058',
+                                   'source': 'wreq',
+                                   'source_name': 'Opera126',
+                                   'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) '
+                                                 'AppleWebKit/537.36 (KHTML, like Gecko) '
+                                                 'Chrome/142.0.0.0 Safari/537.36 OPR/126.0.0.0'},
+                   'opera127': {   'browser': 'opera',
+                                   'h2_fingerprint': '1:65536;2:0;4:6291456;6:262144|15663105|0|m,a,s,p',
+                                   'h2_fingerprint_hash': '52d84b11737d980aef856699f885ca86',
+                                   'ja3': '771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,13-35-10-23-65037-18-5-43-45-27-0-65281-17513-11-51-16,4588-29-23-24,0',
+                                   'ja3_hash': '9c50b3ef12a5107a4c7a78ff417716e7',
+                                   'source': 'wreq',
+                                   'source_name': 'Opera127',
+                                   'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) '
+                                                 'AppleWebKit/537.36 (KHTML, like Gecko) '
+                                                 'Chrome/143.0.0.0 Safari/537.36 OPR/127.0.0.0'},
+                   'opera128': {   'browser': 'opera',
+                                   'h2_fingerprint': '1:65536;2:0;4:6291456;6:262144|15663105|0|m,a,s,p',
+                                   'h2_fingerprint_hash': '52d84b11737d980aef856699f885ca86',
+                                   'ja3': '771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,35-45-13-23-18-11-51-27-5-65281-10-65037-17513-0-43-16,4588-29-23-24,0',
+                                   'ja3_hash': '9fb5d9aa9071f1d0884a4a360bd81ea4',
+                                   'source': 'wreq',
+                                   'source_name': 'Opera128',
+                                   'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) '
+                                                 'AppleWebKit/537.36 (KHTML, like Gecko) '
+                                                 'Chrome/144.0.0.0 Safari/537.36 OPR/128.0.0.0'},
+                   'opera129': {   'browser': 'opera',
+                                   'h2_fingerprint': '1:65536;2:0;4:6291456;6:262144|15663105|0|m,a,s,p',
+                                   'h2_fingerprint_hash': '52d84b11737d980aef856699f885ca86',
+                                   'ja3': '771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,65037-65281-0-35-10-45-18-11-27-5-43-16-13-23-17513-51,4588-29-23-24,0',
+                                   'ja3_hash': '2e0857f7020f62515fdce461b7c6dc38',
+                                   'source': 'wreq',
+                                   'source_name': 'Opera129',
+                                   'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) '
+                                                 'AppleWebKit/537.36 (KHTML, like Gecko) '
+                                                 'Chrome/145.0.0.0 Safari/537.36 OPR/129.0.0.0'},
+                   'opera130': {   'browser': 'opera',
+                                   'h2_fingerprint': '1:65536;2:0;4:6291456;6:262144|15663105|0|m,a,s,p',
+                                   'h2_fingerprint_hash': '52d84b11737d980aef856699f885ca86',
+                                   'ja3': '771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,18-5-17513-10-23-11-13-27-65281-51-16-43-65037-0-45-35,4588-29-23-24,0',
+                                   'ja3_hash': '3c32f8d37b3c6acb13f73d1a1381bfee',
+                                   'source': 'wreq',
+                                   'source_name': 'Opera130',
+                                   'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) '
+                                                 'AppleWebKit/537.36 (KHTML, like Gecko) '
+                                                 'Chrome/146.0.0.0 Safari/537.36 OPR/130.0.0.0'},
+                   'safari153': {   'browser': 'safari',
+                                    'h2_fingerprint': '4:4194304;3:100|10485760|0|m,s,p,a',
+                                    'h2_fingerprint_hash': 'dda308d35f4e5db7b52a61720ca1b122',
+                                    'ja3': '771,4865-4866-4867-49196-49195-52393-49200-49199-52392-49188-49187-49162-49161-49192-49191-49172-49171-157-156-61-60-53-47-49160-49170-10,0-23-65281-10-11-16-5-13-18-51-45-43-21,29-23-24-25,0',
+                                    'ja3_hash': '656b9a2f4de6ed4909e157482860ab3d',
+                                    'source': 'curl_cffi',
+                                    'source_name': 'safari153',
+                                    'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) '
+                                                  'AppleWebKit/605.1.15 (KHTML, like Gecko) '
+                                                  'Version/15.3 Safari/605.1.15'},
+                   'safari155': {   'browser': 'safari',
+                                    'h2_fingerprint': '4:4194304;3:100|10485760|0|m,s,p,a',
+                                    'h2_fingerprint_hash': 'dda308d35f4e5db7b52a61720ca1b122',
+                                    'ja3': '771,4865-4866-4867-49196-49195-52393-49200-49199-52392-49162-49161-49172-49171-157-156-53-47-49160-49170-10,0-23-65281-10-11-16-5-13-18-51-45-43-27-21,29-23-24-25,0',
+                                    'ja3_hash': '773906b0efdefa24a7f2b8eb6985bf37',
+                                    'source': 'curl_cffi',
+                                    'source_name': 'safari155',
+                                    'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) '
+                                                  'AppleWebKit/605.1.15 (KHTML, like Gecko) '
+                                                  'Version/15.5 Safari/605.1.15'},
+                   'safari170': {   'browser': 'safari',
+                                    'h2_fingerprint': '2:0;4:4194304;3:100|10485760|0|m,s,p,a',
+                                    'h2_fingerprint_hash': '959a7e813b79b909a1a0b00a38e8bba3',
+                                    'ja3': '771,4865-4866-4867-49196-49195-52393-49200-49199-52392-49162-49161-49172-49171-157-156-53-47-49160-49170-10,0-23-65281-10-11-16-5-13-18-51-45-43-27-21,29-23-24-25,0',
+                                    'ja3_hash': '773906b0efdefa24a7f2b8eb6985bf37',
+                                    'source': 'curl_cffi',
+                                    'source_name': 'safari170',
+                                    'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) '
+                                                  'AppleWebKit/605.1.15 (KHTML, like Gecko) '
+                                                  'Version/17.0 Safari/605.1.15'},
+                   'safari172_ios': {   'browser': 'safari',
+                                        'h2_fingerprint': '2:0;4:2097152;3:100|10485760|0|m,s,p,a',
+                                        'h2_fingerprint_hash': 'ad8424af1cc590e09f7b0c499bf7fcdb',
+                                        'ja3': '771,4865-4866-4867-49196-49195-52393-49200-49199-52392-49162-49161-49172-49171-157-156-53-47-49160-49170-10,0-23-65281-10-11-16-5-13-18-51-45-43-27-21,29-23-24-25,0',
+                                        'ja3_hash': '773906b0efdefa24a7f2b8eb6985bf37',
+                                        'source': 'curl_cffi',
+                                        'source_name': 'safari172_ios',
+                                        'user_agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_2 '
+                                                      'like Mac OS X) AppleWebKit/605.1.15 (KHTML, '
+                                                      'like Gecko) Version/17.2 Mobile/15E148 '
+                                                      'Safari/604.1'},
+                   'safari180': {   'browser': 'safari',
+                                    'h2_fingerprint': '2:0;3:100;4:2097152;8:1;9:1|10420225|0|m,s,a,p',
+                                    'h2_fingerprint_hash': '62317f06028f316631c157c720223e43',
+                                    'ja3': '771,4865-4866-4867-49196-49195-52393-49200-49199-52392-49162-49161-49172-49171-157-156-53-47-49160-49170-10,0-23-65281-10-11-16-5-13-18-51-45-43-27-21,29-23-24-25,0',
+                                    'ja3_hash': '773906b0efdefa24a7f2b8eb6985bf37',
+                                    'source': 'curl_cffi',
+                                    'source_name': 'safari180',
+                                    'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) '
+                                                  'AppleWebKit/605.1.15 (KHTML, like Gecko) '
+                                                  'Version/18.0 Safari/605.1.15'},
+                   'safari180_ios': {   'browser': 'safari',
+                                        'h2_fingerprint': '2:0;3:100;4:2097152;8:1;9:1|10420225|0|m,s,a,p',
+                                        'h2_fingerprint_hash': '62317f06028f316631c157c720223e43',
+                                        'ja3': '771,4865-4866-4867-49196-49195-52393-49200-49199-52392-49162-49161-49172-49171-157-156-53-47-49160-49170-10,0-23-65281-10-11-16-5-13-18-51-45-43-27-21,29-23-24-25,0',
+                                        'ja3_hash': '773906b0efdefa24a7f2b8eb6985bf37',
+                                        'source': 'curl_cffi',
+                                        'source_name': 'safari180_ios',
+                                        'user_agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 '
+                                                      'like Mac OS X) AppleWebKit/605.1.15 (KHTML, '
+                                                      'like Gecko) Version/18.0 Mobile/15E148 '
+                                                      'Safari/604.1'},
+                   'safari183': {   'browser': 'safari',
+                                    'h2_fingerprint': '2:0;3:100;4:2097152;8:1;9:1|10420225|0|m,s,a,p',
+                                    'h2_fingerprint_hash': '62317f06028f316631c157c720223e43',
+                                    'ja3': '771,4865-4866-4867-49196-49195-52393-49200-49199-52392-49162-49161-49172-49171-157-156-53-47-49160-49170-10,0-23-65281-10-11-16-5-13-18-51-45-43-27-21,29-23-24-25,0',
+                                    'ja3_hash': '773906b0efdefa24a7f2b8eb6985bf37',
+                                    'source': 'wreq',
+                                    'source_name': 'Safari18_3',
+                                    'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) '
+                                                  'AppleWebKit/605.1.15 (KHTML, like Gecko) '
+                                                  'Version/18.3 Safari/605.1.15'},
+                   'safari1831': {   'browser': 'safari',
+                                     'h2_fingerprint': '2:0;3:100;4:2097152;8:1;9:1|10420225|0|m,s,a,p',
+                                     'h2_fingerprint_hash': '62317f06028f316631c157c720223e43',
+                                     'ja3': '771,4865-4866-4867-49196-49195-52393-49200-49199-52392-49162-49161-49172-49171-157-156-53-47-49160-49170-10,0-23-65281-10-11-16-5-13-18-51-45-43-27-21,29-23-24-25,0',
+                                     'ja3_hash': '773906b0efdefa24a7f2b8eb6985bf37',
+                                     'source': 'wreq',
+                                     'source_name': 'Safari18_3_1',
+                                     'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X '
+                                                   '10_15_7) AppleWebKit/605.1.15 (KHTML, like '
+                                                   'Gecko) Version/18.3.1 Safari/605.1.15'},
+                   'safari184': {   'browser': 'safari',
+                                    'h2_fingerprint': '2:0;3:100;4:2097152;9:1|10420225|0|m,s,a,p',
+                                    'h2_fingerprint_hash': 'c52879e43202aeb92740be6e8c86ea96',
+                                    'ja3': '771,4865-4866-4867-49196-49195-52393-49200-49199-52392-49162-49161-49172-49171-157-156-53-47-49160-49170-10,0-23-65281-10-11-16-5-13-18-51-45-43-27-21,29-23-24-25,0',
+                                    'ja3_hash': '773906b0efdefa24a7f2b8eb6985bf37',
+                                    'source': 'curl_cffi',
+                                    'source_name': 'safari184',
+                                    'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) '
+                                                  'AppleWebKit/605.1.15 (KHTML, like Gecko) '
+                                                  'Version/18.4 Safari/605.1.15'},
+                   'safari184_ios': {   'browser': 'safari',
+                                        'h2_fingerprint': '2:0;3:100;4:2097152;9:1|10420225|0|m,s,a,p',
+                                        'h2_fingerprint_hash': 'c52879e43202aeb92740be6e8c86ea96',
+                                        'ja3': '771,4865-4866-4867-49196-49195-52393-49200-49199-52392-49162-49161-49172-49171-157-156-53-47-49160-49170-10,0-23-65281-10-11-16-5-13-18-51-45-43-27-21,29-23-24-25,0',
+                                        'ja3_hash': '773906b0efdefa24a7f2b8eb6985bf37',
+                                        'source': 'curl_cffi',
+                                        'source_name': 'safari184_ios',
+                                        'user_agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 '
+                                                      'like Mac OS X) AppleWebKit/605.1.15 (KHTML, '
+                                                      'like Gecko) Version/18.4 Mobile/15E148 '
+                                                      'Safari/604.1'},
+                   'safari185': {   'browser': 'safari',
+                                    'h2_fingerprint': '2:0;3:100;4:2097152;9:1|10420225|0|m,s,a,p',
+                                    'h2_fingerprint_hash': 'c52879e43202aeb92740be6e8c86ea96',
+                                    'ja3': '771,4865-4866-4867-49196-49195-52393-49200-49199-52392-49162-49161-49172-49171-157-156-53-47-49160-49170-10,0-23-65281-10-11-16-5-13-18-51-45-43-27-21,29-23-24-25,0',
+                                    'ja3_hash': '773906b0efdefa24a7f2b8eb6985bf37',
+                                    'source': 'wreq',
+                                    'source_name': 'Safari18_5',
+                                    'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) '
+                                                  'AppleWebKit/605.1.15 (KHTML, like Gecko) '
+                                                  'Version/18.5 Safari/605.1.15'},
+                   'safari26': {   'browser': 'safari',
+                                   'h2_fingerprint': '2:0;3:100;4:2097152;9:1|10420225|0|m,s,a,p',
+                                   'h2_fingerprint_hash': 'c52879e43202aeb92740be6e8c86ea96',
+                                   'ja3': '771,4866-4867-4865-49196-49195-52393-49200-49199-52392-49162-49161-49172-49171-157-156-53-47-49160-49170-10,0-23-65281-10-11-16-5-13-18-51-45-43-27,4588-29-23-24-25,0',
+                                   'ja3_hash': 'ecdf4f49dd59effc439639da29186671',
+                                   'source': 'wreq',
+                                   'source_name': 'Safari26',
+                                   'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) '
+                                                 'AppleWebKit/605.1.15 (KHTML, like Gecko) '
+                                                 'Version/26.0 Safari/605.1.15'},
+                   'safari260': {   'browser': 'safari',
+                                    'h2_fingerprint': '2:0;3:100;4:2097152;9:1|10420225|0|m,s,a,p',
+                                    'h2_fingerprint_hash': 'c52879e43202aeb92740be6e8c86ea96',
+                                    'ja3': '771,4866-4867-4865-49196-49195-52393-49200-49199-52392-49162-49161-49172-49171-157-156-53-47-49160-49170-10,0-23-65281-10-11-35-16-5-13-18-51-45-43-27,4588-29-23-24-25,0',
+                                    'ja3_hash': '6618231821d2d40f8d1859f5a43a0307',
+                                    'source': 'curl_cffi',
+                                    'source_name': 'safari260',
+                                    'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) '
+                                                  'AppleWebKit/605.1.15 (KHTML, like Gecko) '
+                                                  'Version/26.0 Safari/605.1.15'},
+                   'safari2601': {   'browser': 'safari',
+                                     'h2_fingerprint': '2:0;3:100;4:2097152;9:1|10420225|0|m,s,a,p',
+                                     'h2_fingerprint_hash': 'c52879e43202aeb92740be6e8c86ea96',
+                                     'ja3': '771,4866-4867-4865-49196-49195-52393-49200-49199-52392-49162-49161-49172-49171-157-156-53-47-49160-49170-10,0-23-65281-10-11-16-5-13-18-51-45-43-27,4588-29-23-24-25,0',
+                                     'ja3_hash': 'ecdf4f49dd59effc439639da29186671',
+                                     'source': 'curl_cffi',
+                                     'source_name': 'safari2601',
+                                     'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X '
+                                                   '10_15_7) AppleWebKit/605.1.15 (KHTML, like '
+                                                   'Gecko) Version/26.0.1 Safari/605.1.15'},
+                   'safari260_ios': {   'browser': 'safari',
+                                        'h2_fingerprint': '2:0;3:100;4:2097152;9:1|10420225|0|m,s,a,p',
+                                        'h2_fingerprint_hash': 'c52879e43202aeb92740be6e8c86ea96',
+                                        'ja3': '771,4865-4866-4867-49196-49195-52393-49200-49199-52392-49162-49161-49172-49171-157-156-53-47-49160-49170-10,0-23-65281-10-11-35-16-5-13-18-51-45-43-27-21,29-23-24-25,0',
+                                        'ja3_hash': 'fb3660676bafc9799c86bd51a1ea12f5',
+                                        'source': 'curl_cffi',
+                                        'source_name': 'safari260_ios',
+                                        'user_agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 26_0 '
+                                                      'like Mac OS X) AppleWebKit/605.1.15 (KHTML, '
+                                                      'like Gecko) Version/26.0 Mobile/15E148 '
+                                                      'Safari/604.1'},
+                   'safari261': {   'browser': 'safari',
+                                    'h2_fingerprint': '2:0;3:100;4:2097152;9:1|10420225|0|m,s,a,p',
+                                    'h2_fingerprint_hash': 'c52879e43202aeb92740be6e8c86ea96',
+                                    'ja3': '771,4865-4866-4867-49196-49195-52393-49200-49199-52392-49162-49161-49172-49171-157-156-53-47-49160-49170-10,0-23-65281-10-11-16-5-13-18-51-45-43-27-21,29-23-24-25,0',
+                                    'ja3_hash': '773906b0efdefa24a7f2b8eb6985bf37',
+                                    'source': 'wreq',
+                                    'source_name': 'Safari26_1',
+                                    'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) '
+                                                  'AppleWebKit/605.1.15 (KHTML, like Gecko) '
+                                                  'Version/26.1 Safari/605.1.15'},
+                   'safari262': {   'browser': 'safari',
+                                    'h2_fingerprint': '2:0;3:100;4:2097152;9:1|10420225|0|m,s,a,p',
+                                    'h2_fingerprint_hash': 'c52879e43202aeb92740be6e8c86ea96',
+                                    'ja3': '771,4865-4866-4867-49196-49195-52393-49200-49199-52392-49162-49161-49172-49171-157-156-53-47-49160-49170-10,0-23-65281-10-11-16-5-13-18-51-45-43-27-21,29-23-24-25,0',
+                                    'ja3_hash': '773906b0efdefa24a7f2b8eb6985bf37',
+                                    'source': 'wreq',
+                                    'source_name': 'Safari26_2',
+                                    'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) '
+                                                  'AppleWebKit/605.1.15 (KHTML, like Gecko) '
+                                                  'Version/26.2 Safari/605.1.15'},
+                   'safari_15.3': {   'browser': 'safari',
+                                      'h2_fingerprint': '4:4194304;3:100|10485760|0|m,s,p,a',
+                                      'h2_fingerprint_hash': 'dda308d35f4e5db7b52a61720ca1b122',
+                                      'ja3': '771,4865-4866-4867-49196-49195-52393-49200-49199-52392-49188-49187-49162-49161-49192-49191-49172-49171-157-156-61-60-53-47-49160-49170-10,0-23-65281-10-11-16-5-13-18-51-45-43-27-21,29-23-24-25,0',
+                                      'ja3_hash': 'c59b5aeb69936c251f090be89e1c4ca5',
+                                      'source': 'primp',
+                                      'source_name': 'safari_15.3',
+                                      'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X '
+                                                    '10_15_7) AppleWebKit/605.1.15 (KHTML, like '
+                                                    'Gecko) Version/15.3 Safari/605.1.15'},
+                   'safari_15.5': {   'browser': 'safari',
+                                      'h2_fingerprint': '4:4194304;3:100|10485760|0|m,s,p,a',
+                                      'h2_fingerprint_hash': 'dda308d35f4e5db7b52a61720ca1b122',
+                                      'ja3': '771,4865-4866-4867-49196-49195-52393-49200-49199-52392-49188-49187-49162-49161-49192-49191-49172-49171-157-156-61-60-53-47-49160-49170-10,0-23-65281-10-11-16-5-13-18-51-45-43-27-21,29-23-24-25,0',
+                                      'ja3_hash': 'c59b5aeb69936c251f090be89e1c4ca5',
+                                      'source': 'primp',
+                                      'source_name': 'safari_15.5',
+                                      'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X '
+                                                    '10_15_7) AppleWebKit/605.1.15 (KHTML, like '
+                                                    'Gecko) Version/15.5 Safari/605.1.15'},
+                   'safari_15.6.1': {   'browser': 'safari',
+                                        'h2_fingerprint': '4:4194304;3:100|10485760|0|m,s,p,a',
+                                        'h2_fingerprint_hash': 'dda308d35f4e5db7b52a61720ca1b122',
+                                        'ja3': '771,4865-4866-4867-49196-49195-52393-49200-49199-52392-49162-49161-49172-49171-157-156-53-47-49160-49170-10,0-23-65281-10-11-16-5-13-18-51-45-43-27-21,29-23-24-25,0',
+                                        'ja3_hash': '773906b0efdefa24a7f2b8eb6985bf37',
+                                        'source': 'primp',
+                                        'source_name': 'safari_15.6.1',
+                                        'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X '
+                                                      '10_15_7) AppleWebKit/605.1.15 (KHTML, like '
+                                                      'Gecko) Version/15.6.1 Safari/605.1.15'},
+                   'safari_16': {   'browser': 'safari',
+                                    'h2_fingerprint': '4:4194304;3:100|10485760|0|m,s,p,a',
+                                    'h2_fingerprint_hash': 'dda308d35f4e5db7b52a61720ca1b122',
+                                    'ja3': '771,4865-4866-4867-49196-49195-52393-49200-49199-52392-49162-49161-49172-49171-157-156-53-47-49160-49170-10,0-23-65281-10-11-16-5-13-18-51-45-43-27-21,29-23-24-25,0',
+                                    'ja3_hash': '773906b0efdefa24a7f2b8eb6985bf37',
+                                    'source': 'primp',
+                                    'source_name': 'safari_16',
+                                    'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) '
+                                                  'AppleWebKit/605.1.15 (KHTML, like Gecko) '
+                                                  'Version/16.0 Safari/605.1.15'},
+                   'safari_16.5': {   'browser': 'safari',
+                                      'h2_fingerprint': '4:4194304;3:100|10485760|0|m,s,p,a',
+                                      'h2_fingerprint_hash': 'dda308d35f4e5db7b52a61720ca1b122',
+                                      'ja3': '771,4865-4866-4867-49196-49195-52393-49200-49199-52392-49162-49161-49172-49171-157-156-53-47-49160-49170-10,0-23-65281-10-11-16-5-13-18-51-45-43-27-21,29-23-24-25,0',
+                                      'ja3_hash': '773906b0efdefa24a7f2b8eb6985bf37',
+                                      'source': 'primp',
+                                      'source_name': 'safari_16.5',
+                                      'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X '
+                                                    '10_15_7) AppleWebKit/605.1.15 (KHTML, like '
+                                                    'Gecko) Version/16.5 Safari/605.1.15'},
+                   'safari_17.2.1': {   'browser': 'safari',
+                                        'h2_fingerprint': '2:0;4:4194304;3:100|10485760|0|m,s,p,a',
+                                        'h2_fingerprint_hash': '959a7e813b79b909a1a0b00a38e8bba3',
+                                        'ja3': '771,4865-4866-4867-49196-49195-52393-49200-49199-52392-49162-49161-49172-49171-157-156-53-47-49160-49170-10,0-23-65281-10-11-16-5-13-18-51-45-43-27-21,29-23-24-25,0',
+                                        'ja3_hash': '773906b0efdefa24a7f2b8eb6985bf37',
+                                        'source': 'primp',
+                                        'source_name': 'safari_17.2.1',
+                                        'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X '
+                                                      '10_15_7) AppleWebKit/605.1.15 (KHTML, like '
+                                                      'Gecko) Version/16.0 Safari/605.1.15'},
+                   'safari_17.4.1': {   'browser': 'safari',
+                                        'h2_fingerprint': '4:4194304;3:100|10485760|0|m,s,p,a',
+                                        'h2_fingerprint_hash': 'dda308d35f4e5db7b52a61720ca1b122',
+                                        'ja3': '771,4865-4866-4867-49196-49195-52393-49200-49199-52392-49162-49161-49172-49171-157-156-53-47-49160-49170-10,0-23-65281-10-11-16-5-13-18-51-45-43-27-21,29-23-24-25,0',
+                                        'ja3_hash': '773906b0efdefa24a7f2b8eb6985bf37',
+                                        'source': 'primp',
+                                        'source_name': 'safari_17.4.1',
+                                        'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X '
+                                                      '10_15_7) AppleWebKit/605.1.15 (KHTML, like '
+                                                      'Gecko) Version/17.4.1 Safari/605.1.15'},
+                   'safari_17.5': {   'browser': 'safari',
+                                      'h2_fingerprint': '2:0;4:4194304;3:100|10485760|0|m,s,p,a',
+                                      'h2_fingerprint_hash': '959a7e813b79b909a1a0b00a38e8bba3',
+                                      'ja3': '771,4865-4866-4867-49196-49195-52393-49200-49199-52392-49162-49161-49172-49171-157-156-53-47-49160-49170-10,0-23-65281-10-11-16-5-13-18-51-45-43-27-21,29-23-24-25,0',
+                                      'ja3_hash': '773906b0efdefa24a7f2b8eb6985bf37',
+                                      'source': 'primp',
+                                      'source_name': 'safari_17.5',
+                                      'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X '
+                                                    '10_15_7) AppleWebKit/605.1.15 (KHTML, like '
+                                                    'Gecko) Version/17.5 Safari/605.1.15'},
+                   'safari_18.2': {   'browser': 'safari',
+                                      'h2_fingerprint': '2:0;3:100;4:2097152;8:1;9:1|10420225|0|m,s,a,p',
+                                      'h2_fingerprint_hash': '62317f06028f316631c157c720223e43',
+                                      'ja3': '771,4865-4866-4867-49196-49195-52393-49200-49199-52392-49162-49161-49172-49171-157-156-53-47-49160-49170-10,0-23-65281-10-11-16-5-13-18-51-45-43-27-21,29-23-24-25,0',
+                                      'ja3_hash': '773906b0efdefa24a7f2b8eb6985bf37',
+                                      'source': 'primp',
+                                      'source_name': 'safari_18.2',
+                                      'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X '
+                                                    '10_15_7) AppleWebKit/605.1.15 (KHTML, like '
+                                                    'Gecko) Version/18.2 Safari/605.1.15'},
+                   'safari_ios_16.5': {   'browser': 'safari',
+                                          'h2_fingerprint': '4:2097152;3:100|10485760|0|m,s,p,a',
+                                          'h2_fingerprint_hash': 'd5fcbdc393757341115a861bf8d23265',
+                                          'ja3': '771,4865-4866-4867-49196-49195-52393-49200-49199-52392-49162-49161-49172-49171-157-156-53-47-49160-49170-10,0-23-65281-10-11-16-5-13-18-51-45-43-27-21,29-23-24-25,0',
+                                          'ja3_hash': '773906b0efdefa24a7f2b8eb6985bf37',
+                                          'source': 'primp',
+                                          'source_name': 'safari_ios_16.5',
+                                          'user_agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 16_5 '
+                                                        'like Mac OS X) AppleWebKit/605.1.15 '
+                                                        '(KHTML, like Gecko) Version/16.5 '
+                                                        'Mobile/15E148 Safari/604.1'},
+                   'safari_ios_17.4.1': {   'browser': 'safari',
+                                            'h2_fingerprint': '2:0;4:2097152;3:100|10485760|0|m,s,p,a',
+                                            'h2_fingerprint_hash': 'ad8424af1cc590e09f7b0c499bf7fcdb',
+                                            'ja3': '771,4865-4866-4867-49196-49195-52393-49200-49199-52392-49162-49161-49172-49171-157-156-53-47-49160-49170-10,0-23-65281-10-11-16-5-13-18-51-45-43-27-21,29-23-24-25,0',
+                                            'ja3_hash': '773906b0efdefa24a7f2b8eb6985bf37',
+                                            'source': 'primp',
+                                            'source_name': 'safari_ios_17.4.1',
+                                            'user_agent': 'Mozilla/5.0 (iPad; CPU OS 17_4_1 like '
+                                                          'Mac OS X) AppleWebKit/605.1.15 (KHTML, '
+                                                          'like Gecko) Version/17.4.1 '
+                                                          'Mobile/15E148 Safari/604.1'},
+                   'safari_ios_18.1.1': {   'browser': 'safari',
+                                            'h2_fingerprint': '2:0;3:100;4:2097152;8:1;9:1|10420225|0|m,s,a,p',
+                                            'h2_fingerprint_hash': '62317f06028f316631c157c720223e43',
+                                            'ja3': '771,4865-4866-4867-49196-49195-52393-49200-49199-52392-49162-49161-49172-49171-157-156-53-47-49160-49170-10,0-23-65281-10-11-16-5-13-18-51-45-43-27-21,29-23-24-25,0',
+                                            'ja3_hash': '773906b0efdefa24a7f2b8eb6985bf37',
+                                            'source': 'primp',
+                                            'source_name': 'safari_ios_18.1.1',
+                                            'user_agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS '
+                                                          '18_1_1 like Mac OS X) '
+                                                          'AppleWebKit/605.1.15 (KHTML, like '
+                                                          'Gecko) Version/18.1.1 Mobile/15E148 '
+                                                          'Safari/604.1'},
+                   'safari_ipad_18': {   'browser': 'safari',
+                                         'h2_fingerprint': '2:0;3:100;4:2097152;8:1;9:1|10420225|0|m,s,a,p',
+                                         'h2_fingerprint_hash': '62317f06028f316631c157c720223e43',
+                                         'ja3': '771,4865-4866-4867-49196-49195-52393-49200-49199-52392-49162-49161-49172-49171-157-156-53-47-49160-49170-10,0-23-65281-10-11-16-5-13-18-51-45-43-27-21,29-23-24-25,0',
+                                         'ja3_hash': '773906b0efdefa24a7f2b8eb6985bf37',
+                                         'source': 'primp',
+                                         'source_name': 'safari_ipad_18',
+                                         'user_agent': 'Mozilla/5.0 (iPad; CPU OS 18_0 like Mac OS '
+                                                       'X) AppleWebKit/605.1.15 (KHTML, like '
+                                                       'Gecko) Version/18.0 Mobile/15E148 '
+                                                       'Safari/604.1'},
+                   'safariios26': {   'browser': 'safari',
+                                      'h2_fingerprint': '2:0;3:100;4:2097152;9:1|10420225|0|m,s,a,p',
+                                      'h2_fingerprint_hash': 'c52879e43202aeb92740be6e8c86ea96',
+                                      'ja3': '771,4866-4867-4865-49196-49195-52393-49200-49199-52392-49162-49161-49172-49171-157-156-53-47-49160-49170-10,0-23-65281-10-11-16-5-13-18-51-45-43-27,4588-29-23-24-25,0',
+                                      'ja3_hash': 'ecdf4f49dd59effc439639da29186671',
+                                      'source': 'wreq',
+                                      'source_name': 'SafariIos26',
+                                      'user_agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 26_0 like '
+                                                    'Mac OS X) AppleWebKit/605.1.15 (KHTML, like '
+                                                    'Gecko) Version/26.0 Mobile/15E148 '
+                                                    'Safari/604.1'},
+                   'safariios262': {   'browser': 'safari',
+                                       'h2_fingerprint': '2:0;3:100;4:2097152;9:1|10420225|0|m,s,a,p',
+                                       'h2_fingerprint_hash': 'c52879e43202aeb92740be6e8c86ea96',
+                                       'ja3': '771,4866-4867-4865-49196-49195-52393-49200-49199-52392-49162-49161-49172-49171-157-156-53-47-49160-49170-10,0-23-65281-10-11-16-5-13-18-51-45-43-27,4588-29-23-24-25,0',
+                                       'ja3_hash': 'ecdf4f49dd59effc439639da29186671',
+                                       'source': 'wreq',
+                                       'source_name': 'SafariIos26_2',
+                                       'user_agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_7 like '
+                                                     'Mac OS X) AppleWebKit/605.1.15 (KHTML, like '
+                                                     'Gecko) Version/26.2 Mobile/15E148 '
+                                                     'Safari/604.1'},
+                   'safariipad26': {   'browser': 'safari',
+                                       'h2_fingerprint': '2:0;3:100;4:2097152;9:1|10420225|0|m,s,a,p',
+                                       'h2_fingerprint_hash': 'c52879e43202aeb92740be6e8c86ea96',
+                                       'ja3': '771,4866-4867-4865-49196-49195-52393-49200-49199-52392-49162-49161-49172-49171-157-156-53-47-49160-49170-10,0-23-65281-10-11-16-5-13-18-51-45-43-27,4588-29-23-24-25,0',
+                                       'ja3_hash': 'ecdf4f49dd59effc439639da29186671',
+                                       'source': 'wreq',
+                                       'source_name': 'SafariIPad26',
+                                       'user_agent': 'Mozilla/5.0 (iPad; CPU OS 18_6 like Mac OS '
+                                                     'X) AppleWebKit/605.1.15 (KHTML, like Gecko) '
+                                                     'Version/26.0 Mobile/15E148 Safari/604.1'},
+                   'safariipad262': {   'browser': 'safari',
+                                        'h2_fingerprint': '2:0;3:100;4:2097152;9:1|10420225|0|m,s,a,p',
+                                        'h2_fingerprint_hash': 'c52879e43202aeb92740be6e8c86ea96',
+                                        'ja3': '771,4866-4867-4865-49196-49195-52393-49200-49199-52392-49162-49161-49172-49171-157-156-53-47-49160-49170-10,0-23-65281-10-11-16-5-13-18-51-45-43-27,4588-29-23-24-25,0',
+                                        'ja3_hash': 'ecdf4f49dd59effc439639da29186671',
+                                        'source': 'wreq',
+                                        'source_name': 'SafariIpad26_2',
+                                        'user_agent': 'Mozilla/5.0 (iPad; CPU OS 18_7 like Mac OS '
+                                                      'X) AppleWebKit/605.1.15 (KHTML, like Gecko) '
+                                                      'Version/26.2 Mobile/15E148 Safari/604.1'},
+                   'tor145': {   'browser': 'firefox',
+                                 'h2_fingerprint': '1:65536;2:0;4:131072;5:16384|12517377|0|m,p,a,s',
+                                 'h2_fingerprint_hash': '6ea73faa8fc5aac76bded7bd238f6433',
+                                 'ja3': '771,4865-4867-4866-49195-49199-52393-52392-49196-49200-49171-49172-156-157-47-53,0-23-65281-10-11-16-5-34-51-43-13-28-65037,29-23-24-25-256-257,0',
+                                 'ja3_hash': '0faf2a91198d40dbd58b9308f3fca2fd',
+                                 'source': 'curl_cffi',
+                                 'source_name': 'tor145',
+                                 'user_agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; '
+                                               'rv:128.0) Gecko/20100101 Firefox/128.0'}},
+    'version': 1}
 
 
 def list_impersonate_targets() -> List[str]:
     """All preset names that can be passed as impersonate=."""
-    data = _load()
-    names = set(data.get("targets", {}).keys()) | set(data.get("aliases", {}).keys())
+    names = set(_DATA.get("targets", {}).keys()) | set(_DATA.get("aliases", {}).keys())
     return sorted(names)
 
 
@@ -40,9 +1949,8 @@ def resolve_impersonate(name: str) -> Dict[str, Any]:
 
     Raises HTTPZError if the name is unknown.
     """
-    data = _load()
-    targets = data.get("targets", {})
-    aliases = data.get("aliases", {})
+    targets = _DATA.get("targets", {})
+    aliases = _DATA.get("aliases", {})
 
     if name in targets:
         return targets[name]

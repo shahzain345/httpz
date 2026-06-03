@@ -4,11 +4,36 @@
 
 <h1 align="center">httpz</h1>
 
-**An HTTP client for Python with first-class TLS fingerprint control.**
+<p align="center">
+  <b>An HTTP client for Python with first-class TLS fingerprint control.</b>
+</p>
 
-httpz is the first Python HTTP library that makes setting a custom **JA3** fingerprint as effortless as setting a header — pass a string, and the underlying TLS handshake is rewritten to match. The same goes for **HTTP/2 (Akamai)** fingerprints. The API mirrors `httpx` so existing code ports over with almost no changes.
+<p align="center">
+  <a href="https://pypi.org/project/pyhttpz/"><img alt="PyPI" src="https://img.shields.io/pypi/v/pyhttpz?color=4c1&label=pypi"></a>
+  <img alt="Python versions" src="https://img.shields.io/pypi/pyversions/pyhttpz?color=blue">
+  <img alt="License" src="https://img.shields.io/badge/license-MIT-green">
+  <a href="https://discord.gg/4793Cm3kc2"><img alt="Discord" src="https://img.shields.io/badge/discord-join%20the%20community-5865F2?logo=discord&logoColor=white"></a>
+</p>
 
-Under the hood, httpz wraps [azuretls-client](https://github.com/Noooste/azuretls-client) (Go) as a shared library and bridges it into Python.
+<p align="center">
+  <a href="https://github.com/shahzain345/shahzain345.github.io/blob/main/README.md"><b>📖 Documentation</b></a>
+  &nbsp;·&nbsp;
+  <a href="#quick-examples">Examples</a>
+  &nbsp;·&nbsp;
+  <a href="#impersonate-presets">Presets</a>
+  &nbsp;·&nbsp;
+  <a href="#benchmarks">Benchmarks</a>
+  &nbsp;·&nbsp;
+  <a href="https://discord.gg/4793Cm3kc2">Discord</a>
+</p>
+
+---
+
+Most Python HTTP clients let you set headers. httpz lets you set the **TLS handshake itself** — hand it a JA3 string and the ClientHello on the wire is rewritten to match it, byte for byte. Same goes for the **HTTP/2 (Akamai)** fingerprint. And since the API is shaped like `httpx`, porting existing code is usually just a change of import.
+
+The short version: pass `impersonate="chrome131"` and your request looks like Chrome — its TLS fingerprint, its HTTP/2 fingerprint, its User-Agent, *and* the exact headers it sends, in the order it sends them. Not just a spoofed User-Agent string.
+
+Under the hood it wraps [azuretls-client](https://github.com/Noooste/azuretls-client) (Go) as a shared library, so there's a real, battle-tested TLS engine behind the Pythonic surface.
 
 ```python
 import httpz
@@ -25,9 +50,9 @@ with httpz.Client(
 
 ## Why httpz
 
-Existing TLS-fingerprinting options in Python — `curl_cffi`, `tls_client`, raw `pycurl` patches — generally require you to pick a pre-canned browser preset, or to wrangle low-level config that doesn't survive a library upgrade. **httpz is the first Python library where you can hand it any JA3 string and it Just Works.** No preset enum, no rebuild step, no fork of urllib3 — just `ja3="..."` on the constructor.
+The existing options — `curl_cffi`, `tls_client`, patched `pycurl` — mostly hand you a fixed menu of browser presets, or some low-level knob arrangement that breaks the next time you upgrade. httpz takes the other approach: give it *any* JA3 string and it just works. No preset enum to wait on, no rebuild step, no urllib3 fork to maintain — `ja3="..."` on the constructor and you're done.
 
-You also get the regular HTTP-client conveniences in one library: sync + async, sessions with cookie jars, proxy support (http / https / socks5), HTTP/2, and an `httpx`-style request/response surface.
+And it's still a normal HTTP client underneath. Sync and async, sessions with cookie jars, proxies (http / https / socks5), HTTP/2, and an `httpx`-shaped request/response API. You don't give up the everyday conveniences to get the fingerprinting.
 
 ---
 
@@ -38,7 +63,7 @@ You also get the regular HTTP-client conveniences in one library: sync + async, 
 - **Custom JA3** — supply any JA3 fingerprint string and httpz reproduces the exact ClientHello (cipher suites, extensions, elliptic curves, point formats) at the TLS layer.
 - **Custom HTTP/2 (Akamai) fingerprint** — set SETTINGS, WINDOW_UPDATE, header pseudo-header ordering, and priority frames via a single Akamai-format string.
 - **Browser presets** — `chrome`, `firefox`, `safari`, `edge`, `opera`, `ios` for one-line spoofing without writing a JA3 by hand.
-- **`impersonate="..."` — 82 pre-canned browser presets** scraped from `curl_cffi` and `primp`, plus user-added profiles (see [Impersonate presets](#impersonate-presets) below).
+- **`impersonate="..."` — 170 pre-canned browser presets** covering Chrome, Firefox, Safari, Edge and Opera (see [Impersonate presets](#impersonate-presets) below). Each preset also sends that browser's real **default request headers** (client hints, `Accept`, `Sec-Fetch-*`, …), so the request matches a browser at the HTTP layer too — not just the TLS/HTTP2 handshake.
 - **Apply at runtime** — `client.apply_ja3(...)` and `client.apply_h2_fingerprint(...)` reconfigure a live session without rebuilding it.
 
 ```python
@@ -49,15 +74,16 @@ client.apply_h2_fingerprint("1:65536;2:0;4:6291456;6:262144|15663105|0|m,s,a,p")
 
 ### Impersonate presets
 
-`impersonate="chrome131"` is a one-shot shorthand that sets JA3 + Akamai (H2) fingerprint + User-Agent + browser navigator all at once, using fingerprints scraped from `curl_cffi` and `primp`:
+`impersonate="chrome131"` is a one-shot shorthand that sets JA3 + Akamai (H2) fingerprint + User-Agent + browser navigator all at once:
 
 ```python
-# Use a curl_cffi-shaped Chrome 131 handshake
 with httpz.Client(impersonate="chrome131") as c:
     r = c.get("https://tls.peet.ws/api/all")
-    print(r.json()["tls"]["ja3_hash"])  # matches curl_cffi's chrome131 exactly
+    print(r.json()["tls"]["ja3_hash"])  # matches the chrome131 profile exactly
 
-# Use a primp-shaped Chrome 131 handshake (different extension order)
+# Some versions ship more than one distinct on-the-wire profile (e.g. a
+# different TLS extension order). They live under sibling names like
+# `chrome131`, `chrome_131` and `chrome131a` — each a real, distinct handshake.
 with httpz.Client(impersonate="chrome_131") as c:
     ...
 
@@ -66,53 +92,63 @@ with httpz.Client(impersonate="chrome131", user_agent="MyBot/1.0") as c:
     ...
 ```
 
-**82 unique browser profiles** (and ~131 names total once aliases are counted — names like `safari17_0` and `safari_17.0` resolve to the same canonical profile because the bytes-on-the-wire are identical).
+**170 unique browser profiles** (219 names total once aliases are counted — names like `safari17_0` and `safari_17.0` resolve to the same canonical profile because the bytes-on-the-wire are identical).
+
+#### Browser default headers
+
+A real Chrome request isn't just a TLS handshake — it also carries a recognizable set of HTTP headers (`sec-ch-ua`, `Accept`, `Sec-Fetch-*`, `Accept-Language`, `priority`, …). A request with a perfect JA3 but none of those headers is still easy to flag as non-browser.
+
+So whenever a browser navigator is active (`impersonate=` or `browser=`), httpz automatically sends that browser's default headers, with values derived from the preset (e.g. the `sec-ch-ua` version and `Accept-Encoding` track the Chrome version; the platform/mobile hints track the User-Agent):
+
+```python
+with httpz.Client(impersonate="chrome146") as c:
+    c.get("https://tls.peet.ws/api/all")
+# sends sec-ch-ua / sec-ch-ua-mobile / sec-ch-ua-platform /
+# upgrade-insecure-requests / accept / sec-fetch-* /
+# accept-encoding / accept-language / priority — like real Chrome
+```
+
+The headers (including `User-Agent`) are emitted in each browser's natural order — e.g. Chrome/Edge/Opera place `user-agent` right after `upgrade-insecure-requests`, while Firefox and Safari lead with it — so the on-the-wire header order matches a real browser, not just the header set.
+
+Anything you pass in `headers=` overrides a default per key (keeping the browser's header order); extra headers are appended. To send only the headers you specify, pass `browser_headers=False`:
+
+```python
+# Override one default, add one of your own — the rest of Chrome's headers stay
+httpz.Client(impersonate="chrome146", headers={"accept-language": "fr-FR,fr;q=0.9"})
+
+# Opt out entirely
+httpz.Client(impersonate="chrome146", browser_headers=False)
+```
+
+Firefox and Safari presets send their own (client-hint-free) header sets accordingly.
 
 #### Every profile you can impersonate
 
-##### Chrome (43)
+<details>
+<summary><b>All 170 profiles, grouped by browser</b> — click to expand</summary>
 
-**curl_cffi-sourced (19)** — desktop unless noted:
-`chrome99`, `chrome100`, `chrome101`, `chrome104`, `chrome107`, `chrome110`, `chrome116`, `chrome119`, `chrome120`, `chrome123`, `chrome124`, `chrome131`, `chrome133a`, `chrome136`, `chrome142`, `chrome145`, `chrome146`, `chrome99_android`, `chrome131_android`
+<br>
 
-**primp-sourced (23)** — desktop:
-`chrome_100`, `chrome_101`, `chrome_104`, `chrome_105`, `chrome_106`, `chrome_107`, `chrome_108`, `chrome_109`, `chrome_114`, `chrome_116`, `chrome_117`, `chrome_118`, `chrome_119`, `chrome_120`, `chrome_123`, `chrome_124`, `chrome_126`, `chrome_127`, `chrome_128`, `chrome_129`, `chrome_130`, `chrome_131`, `chrome_133`
+##### Chrome (78)
+`chrome99`, `chrome99_android`, `chrome100`, `chrome101`, `chrome104`, `chrome106a`, `chrome107`, `chrome107a`, `chrome108a`, `chrome109a`, `chrome110`, `chrome110a`, `chrome114a`, `chrome116`, `chrome116a`, `chrome117a`, `chrome118a`, `chrome119`, `chrome119a`, `chrome120`, `chrome120a`, `chrome123`, `chrome123a`, `chrome124`, `chrome124a`, `chrome126a`, `chrome127a`, `chrome128a`, `chrome129a`, `chrome130a`, `chrome131`, `chrome131_android`, `chrome131a`, `chrome132`, `chrome133a`, `chrome133b`, `chrome134`, `chrome135`, `chrome136`, `chrome136a`, `chrome137`, `chrome138`, `chrome139`, `chrome140`, `chrome141`, `chrome142`, `chrome142a`, `chrome143`, `chrome144`, `chrome145`, `chrome145a`, `chrome146`, `chrome146a`, `chrome147`, `chrome148`, `chrome_100`, `chrome_101`, `chrome_104`, `chrome_105`, `chrome_106`, `chrome_107`, `chrome_108`, `chrome_109`, `chrome_114`, `chrome_116`, `chrome_117`, `chrome_118`, `chrome_119`, `chrome_120`, `chrome_123`, `chrome_124`, `chrome_126`, `chrome_127`, `chrome_128`, `chrome_129`, `chrome_130`, `chrome_131`, `chrome_133`
 
-**Manual / user-added (1)**:
-`chrome148`
+##### Firefox (20)
+`firefox133`, `firefox135`, `firefox136`, `firefox139`, `firefox142`, `firefox143`, `firefox144`, `firefox145`, `firefox146`, `firefox147`, `firefox148`, `firefox149`, `firefox151`, `firefox_109`, `firefox_117`, `firefox_128`, `firefoxandroid135`, `firefoxprivate135`, `firefoxprivate136`, `tor145`
 
-##### Firefox (9)
+##### Safari (34)
+`safari26`, `safari153`, `safari155`, `safari170`, `safari172_ios`, `safari180`, `safari180_ios`, `safari183`, `safari184`, `safari184_ios`, `safari185`, `safari260`, `safari260_ios`, `safari261`, `safari262`, `safari1831`, `safari2601`, `safari_15.3`, `safari_15.5`, `safari_15.6.1`, `safari_16`, `safari_16.5`, `safari_17.2.1`, `safari_17.4.1`, `safari_17.5`, `safari_18.2`, `safari_ios_16.5`, `safari_ios_17.4.1`, `safari_ios_18.1.1`, `safari_ipad_18`, `safariios26`, `safariios262`, `safariipad26`, `safariipad262`
 
-**curl_cffi-sourced (5)** — desktop (incl. Tor):
-`firefox133`, `firefox135`, `firefox144`, `firefox147`, `tor145`
+##### Edge (23)
+`edge99`, `edge101`, `edge122a`, `edge127a`, `edge131a`, `edge134`, `edge135`, `edge136`, `edge137`, `edge138`, `edge139`, `edge140`, `edge141`, `edge142`, `edge143`, `edge144`, `edge145`, `edge146`, `edge147`, `edge_101`, `edge_122`, `edge_127`, `edge_131`
 
-**primp-sourced (3)** — desktop:
-`firefox_109`, `firefox_117`, `firefox_128`
+##### Opera (15)
+`opera116`, `opera117`, `opera118`, `opera119`, `opera120`, `opera121`, `opera122`, `opera123`, `opera124`, `opera125`, `opera126`, `opera127`, `opera128`, `opera129`, `opera130`
 
-**Manual / user-added (1)**:
-`firefox151`
-
-##### Safari (11 unique, ~24 with aliases)
-
-**curl_cffi-sourced (11)** — desktop + iOS:
-`safari153`, `safari155`, `safari170`, `safari172_ios`, `safari180`, `safari180_ios`, `safari184`, `safari184_ios`, `safari260`, `safari2601`, `safari260_ios`
-
-Aliases (resolve to a curl_cffi profile above): `safari15_3` → `safari153`, `safari15_5` → `safari155`, `safari17_0` → `safari170`, `safari17_2_ios` → `safari172_ios`, `safari18_0` → `safari180`, `safari18_0_ios` → `safari180_ios`.
-
-**primp-sourced** — desktop + iOS + iPad (note: many `safari_*` entries from primp turn out to be identical to curl_cffi safari profiles on the wire, so they resolve to the curl_cffi canonical via alias):
-`safari_15.3`, `safari_15.5`, `safari_15.6.1`, `safari_16`, `safari_16.5`, `safari_17.2.1`, `safari_17.4.1`, `safari_17.5`, `safari_18.2`, `safari_ios_16.5`, `safari_ios_17.4.1`, `safari_ios_18.1.1`, `safari_ipad_18`
-
-##### Edge (6)
-
-**curl_cffi-sourced (2)** — desktop:
-`edge99`, `edge101`
-
-**primp-sourced (4)** — desktop:
-`edge_101`, `edge_122`, `edge_127`, `edge_131`
+</details>
 
 #### How name lookup works
 
-Names are normalized before lookup, so all of these resolve to the same profile: `chrome131`, `chrome_131`, `Chrome131`, `CHROME131` (after normalization that strips underscores/dots and lowercases). When the same family/version exists in both libraries the curl_cffi version is preferred as the canonical, and the primp version remains available under its underscored name (different ja3 extension order — still a distinct profile on the wire).
+Names are normalized before lookup, so all of these resolve to the same profile: `chrome131`, `chrome_131`, `Chrome131`, `CHROME131` (after normalization that strips underscores/dots and lowercases). When a browser version has more than one distinct handshake on the wire, each variant keeps its own name (a sibling suffix like `_131` or `131a`) so every unique profile stays reachable.
 
 List everything at runtime:
 
@@ -124,14 +160,19 @@ print(httpz.resolve_impersonate("chrome131"))    # full preset dict
 
 #### Refreshing the presets
 
-The presets live in `httpz/_presets.json` and are generated by `scripts/scrape_fingerprints.py`. To rescrape (e.g. after upgrading curl_cffi or primp):
+The presets are embedded directly in `httpz/presets.py` (as a Python dict, so compiled/bundled builds pick them up automatically — no separate data file to include) and are generated by `scripts/scrape_fingerprints.py`.
 
 ```bash
-pip install -U curl_cffi primp
+# Full rebuild from all sources (drops manual entries):
+pip install -U curl_cffi primp wreq
 python scripts/scrape_fingerprints.py
+
+# Or add ONLY new profiles from one source on top of the current presets,
+# skipping any whose fingerprint already exists (keeps manual entries):
+python scripts/scrape_fingerprints.py --augment --only wreq
 ```
 
-The scraper enumerates every impersonate target each library exposes, makes a real request through that library to `https://tls.peet.ws/api/all`, captures the JA3 + Akamai fingerprint + User-Agent the server saw, dedupes any names that produce byte-identical handshakes, and writes the result to `httpz/_presets.json`. Manually-added profiles (the `source: "manual"` entries) are preserved across rescrapes only if you re-add them — keep a backup if you've curated any.
+The scraper enumerates every impersonate target each library exposes, makes a real request through that library to `https://tls.peet.ws/api/all`, captures the JA3 + Akamai fingerprint + User-Agent the server saw, dedupes any names that produce byte-identical handshakes, and regenerates `httpz/presets.py` with the result embedded as a Python dict. In `--augment` mode a freshly scraped profile is added only when its `(ja3, h2_fingerprint, user_agent)` isn't already present; duplicates are skipped so nothing is stored twice. Manually-added profiles (the `source: "manual"` entries) are preserved by `--augment` but dropped by a full rebuild — keep a backup if you've curated any.
 
 #### A note on TLS extension 41 (pre_shared_key)
 

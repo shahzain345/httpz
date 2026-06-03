@@ -7,7 +7,7 @@ Backed by azuretls-client (Go) via shared library.
 """
 
 __title__ = "httpz"
-__version__ = "0.1.1"
+__version__ = "0.1.2"
 
 from .client import Client
 from .async_client import AsyncClient
@@ -15,6 +15,7 @@ from .response import Response
 from .headers import Headers
 from .cookies import Cookies
 from .presets import list_impersonate_targets, resolve_impersonate
+from ._types import BrowserTypeLiteral
 from .exceptions import (
     HTTPZError,
     TransportError,
@@ -100,4 +101,5 @@ __all__ = [
     "options",
     "list_impersonate_targets",
     "resolve_impersonate",
+    "BrowserTypeLiteral",
 ]

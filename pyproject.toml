@@ -4,8 +4,10 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pyhttpz"
-version = "0.1.1"
+version = "0.1.2"
+author = "Shahzain345"
 description = "HTTP client with TLS fingerprint control, backed by azuretls-client. Installed as `pyhttpz`, imported as `httpz`."
+readme = "README.md"
 requires-python = ">=3.9"
 license = {text = "MIT"}
 classifiers = [
@@ -28,4 +30,4 @@ dev = ["pytest", "pytest-asyncio"]
 include = ["httpz*"]
 
 [tool.setuptools.package-data]
-httpz = ["_libs/*.dll", "_libs/*.so", "_libs/*.dylib", "_presets.json"]
+httpz = ["_libs/*.dll", "_libs/*.so", "_libs/*.dylib"]
