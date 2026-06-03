@@ -28,6 +28,7 @@ dist/
 *.egg-info/
 *.egg
 pip-wheel-metadata/
+MANIFEST.in
 
 
 # ──────────────────────────────────────────────────────────────
