@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pyhttpz"
-version = "0.1.2"
+version = "0.1.3"
 authors = [{name = "Shahzain345"}]
 description = "HTTP client with TLS fingerprint control, backed by azuretls-client. Installed as `pyhttpz`, imported as `httpz`."
 readme = "README.md"

@@ -196,8 +196,16 @@ func applyConfig(s *azuretls.Session, cfg *SessionConfig) error {
 	return nil
 }
 
+// debugPath is read once at startup. When HTTPZ_DEBUG_LOG is unset (the
+// default for every shipped build), debugLog is a no-op and never touches the
+// filesystem — so we never write request URLs/headers to a user's disk.
+var debugPath = os.Getenv("HTTPZ_DEBUG_LOG")
+
 func debugLog(format string, args ...interface{}) {
-	f, err := os.OpenFile("D:\\httpz\\go_debug.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	if debugPath == "" {
+		return
+	}
+	f, err := os.OpenFile(debugPath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
 		return
 	}

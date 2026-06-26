@@ -38,7 +38,8 @@ class AsyncClient:
         **kwargs: Forwarded verbatim to ``httpz.Client``. See ``Client``'s
             docstring for the full list (``headers``, ``cookies``, ``proxy``,
             ``ja3``, ``h2_fingerprint``, ``browser``, ``user_agent``,
-            ``impersonate``, ``timeout``, ``max_redirects``, ``verify``).
+            ``impersonate``, ``timeout``, ``max_redirects``, ``verify``,
+            ``force_http1``).
 
     Attributes:
         headers (Headers): Shared with the underlying sync client. Mutate

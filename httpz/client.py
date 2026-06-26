@@ -60,6 +60,9 @@ class Client:
         verify: When ``False``, TLS certificate verification is skipped.
             Useful for self-signed certs in development; never ship ``False``
             to production.
+        force_http1: When ``True``, every request through this client is forced
+            over HTTP/1.1 (HTTP/2 negotiation is disabled). A per-request
+            ``force_http1=`` on ``request()`` overrides this default.
         browser_headers: When ``True`` (default) and a browser navigator is
             active (via ``impersonate=`` or ``browser=``), httpz also sends that
             browser's default request headers — client hints (``sec-ch-ua*``),
@@ -129,6 +132,7 @@ class Client:
         max_redirects: int = 10,
         verify: bool = True,
         browser_headers: bool = True,
+        force_http1: bool = False,
     ):
         self._closed = True  # safe default until session is created
 
@@ -200,6 +204,7 @@ class Client:
         self._closed = False
         self._proxy = proxy
         self._timeout = timeout
+        self._force_http1 = force_http1
 
     @property
     def headers(self) -> Headers:
@@ -281,8 +286,14 @@ class Client:
         timeout: Optional[float] = None,
         follow_redirects: bool = True,
         max_redirects: Optional[int] = None,
+        force_http1: Optional[bool] = None,
     ) -> Response:
-        """Send an HTTP request."""
+        """Send an HTTP request.
+
+        ``force_http1`` forces this request over HTTP/1.1 (disabling HTTP/2).
+        Leave it ``None`` to inherit the client-level ``force_http1`` set on the
+        constructor; pass ``True``/``False`` to override per request.
+        """
         if self._closed:
             raise HTTPZError("Client is closed")
 
@@ -342,6 +353,14 @@ class Client:
             req_data["disable_redirect"] = True
         if max_redirects is not None:
             req_data["max_redirects"] = max_redirects
+
+        # Force HTTP/1.1. Per-request arg wins; otherwise fall back to the
+        # client-level default (same precedence pattern as timeout above).
+        effective_force_http1 = (
+            force_http1 if force_http1 is not None else self._force_http1
+        )
+        if effective_force_http1:
+            req_data["force_http1"] = True
 
         # Execute
         raw_response = self._bridge.request(self._session_id, req_data)

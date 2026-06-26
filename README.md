@@ -215,7 +215,35 @@ async with httpz.AsyncClient() as c:
 - **Proxy support**: `proxy="http://..."`, `"https://..."`, or `"socks5://..."`. Settable at construction or via `set_proxy(...)` / `clear_proxy()`.
 - **Cookie persistence** within the session (managed by the Go-side jar).
 - **HTTP/2** by default when the server negotiates it.
+- **Force HTTP/1.1**: `force_http1=True` disables HTTP/2 negotiation — settable at the client level or per request.
 - **User-Agent** override at the client level.
+
+### Forcing HTTP/1.1
+
+By default httpz uses HTTP/2 whenever the server negotiates it. Pass
+`force_http1=True` to disable HTTP/2 and pin the connection to HTTP/1.1. It works
+at both the client level (applies to every request) and per request, and a
+per-request value overrides the client default:
+
+```python
+# Client-level: every request through this client is HTTP/1.1
+with httpz.Client(impersonate="chrome131", force_http1=True) as c:
+    r = c.get("https://tls.peet.ws/api/clean")
+    print(r.http_version)   # HTTP/1.1
+
+# Per request: force just this one call over HTTP/1.1
+with httpz.Client(impersonate="chrome131") as c:
+    r = c.get("https://example.com", force_http1=True)
+    print(r.http_version)   # HTTP/1.1
+
+# Per-request override: opt one call back into HTTP/2 on a forced client
+with httpz.Client(impersonate="chrome131", force_http1=True) as c:
+    r = c.get("https://example.com", force_http1=False)
+    print(r.http_version)   # HTTP/2.0
+```
+
+The same `force_http1=` argument works on `httpz.AsyncClient` and on the
+module-level shortcuts (`httpz.get(...)`, `httpz.post(...)`, …).
 
 ### Response API
 
@@ -349,7 +377,7 @@ To reproduce: `python benchmarks/run_all.py` (or, for stable numbers, point it a
 ## Installation
 
 ```bash
-pip install pyhttpz
+pip install pyhttpz --upgrade
 ```
 
 > The PyPI distribution name is **`pyhttpz`** (the bare `httpz` name was already taken on PyPI). The Python import name is unchanged — once installed, you still write `import httpz`.

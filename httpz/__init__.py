@@ -3,11 +3,11 @@ httpz - HTTP client with TLS fingerprint control.
 
 Backed by azuretls-client (Go) via shared library.
 
-
+By Shahzain345
 """
 
 __title__ = "httpz"
-__version__ = "0.1.2"
+__version__ = "0.1.3"
 
 from .client import Client
 from .async_client import AsyncClient
